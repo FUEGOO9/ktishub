@@ -1,10 +1,6 @@
-export const config = {
-  runtime: 'edge',
-};
-
 export default async function handler(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const imageUrl = searchParams.get('url');
+  const urlObj = new URL(request.url, `https://${request.headers.get('host') || 'localhost'}`);
+  const imageUrl = urlObj.searchParams.get('url');
 
   if (!imageUrl) {
     return new Response('Missing image URL', { status: 400 });
