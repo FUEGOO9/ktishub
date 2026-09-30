@@ -378,7 +378,7 @@ export default function App() {
 
   // Load products from server API on mount
   useEffect(() => {
-    fetch('/api/products')
+    fetch('/products.json')
       .then((res) => res.json())
       .then((serverData) => {
         if (Array.isArray(serverData) && serverData.length > 0) {
