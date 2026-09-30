@@ -1,6 +1,8 @@
-import type { RequestContext } from '@vercel/functions';
+export const config = {
+  runtime: 'edge',
+};
 
-export async function GET(request: Request) {
+export default async function handler(request: Request) {
   const { searchParams } = new URL(request.url);
   const imageUrl = searchParams.get('url');
 
