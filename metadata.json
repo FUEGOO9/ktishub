@@ -1,0 +1,6 @@
+{
+  "name": "KitsHub - Tienda de Camisetas Retro & Fútbol",
+  "description": "Tienda online de camisetas y ropa deportiva con categorías: Populares, Temporada 26/27, Temporada 25/26, Retro, Conjuntos Especiales, Unboxing, Ropa Entrenamiento & Cortavientos y Ropa de Moda. Pago seguro con Tarjeta, Klarna (3 plazos sin intereses), PayPal y Cripto.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

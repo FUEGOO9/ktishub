@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+/* ========================================================================= */
+/* LIGHT THEME (FONDO BLANCO) STYLES                                         */
+/* ========================================================================= */
+body.theme-light {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+body.theme-light #root > div {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .bg-neutral-950 {
+  background-color: #ffffff !important;
+}
+
+body.theme-light .bg-neutral-950\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.theme-light .bg-neutral-950\/80 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+body.theme-light .bg-neutral-950\/40 {
+  background-color: rgba(241, 245, 249, 0.7) !important;
+}
+
+body.theme-light .bg-neutral-900 {
+  background-color: #ffffff !important;
+}
+
+body.theme-light .bg-neutral-900\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.theme-light .bg-neutral-900\/80 {
+  background-color: #ffffff !important;
+}
+
+body.theme-light .bg-neutral-850,
+body.theme-light .bg-neutral-800 {
+  background-color: #f1f5f9 !important;
+}
+
+body.theme-light .border-neutral-800,
+body.theme-light .border-neutral-800\/90,
+body.theme-light .border-neutral-800\/80,
+body.theme-light .border-neutral-800\/60,
+body.theme-light .border-neutral-700,
+body.theme-light .border-neutral-700\/80,
+body.theme-light .border-neutral-900 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Card styling in light mode */
+body.theme-light .group.relative.flex.flex-col {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+  border-color: #e2e8f0 !important;
+  background-color: #ffffff !important;
+}
+
+body.theme-light .group.relative.flex.flex-col:hover {
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04) !important;
+  border-color: #10b981 !important;
+}
+
+body.theme-light .aspect-\[4\/3\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Typography in light mode */
+body.theme-light h1.text-white,
+body.theme-light h2.text-white,
+body.theme-light h3.text-white,
+body.theme-light h4.text-white,
+body.theme-light strong.text-white,
+body.theme-light span.text-white:not(.preserve-white) {
+  color: #0f172a !important;
+}
+
+body.theme-light .text-neutral-100 {
+  color: #0f172a !important;
+}
+
+body.theme-light .text-neutral-200 {
+  color: #1e293b !important;
+}
+
+body.theme-light .text-neutral-300 {
+  color: #334155 !important;
+}
+
+body.theme-light .text-neutral-400 {
+  color: #64748b !important;
+}
+
+/* Hero card in light mode */
+body.theme-light .bg-gradient-to-br.from-neutral-900 {
+  background-image: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f0fdf4 100%) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Top micro announcement bar */
+body.theme-light .bg-gradient-to-r.from-emerald-950 {
+  background-image: linear-gradient(to right, #ecfdf5, #f8fafc, #ecfdf5) !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+/* Inputs and forms in light mode */
+body.theme-light input[type="text"],
+body.theme-light input[type="number"],
+body.theme-light select,
+body.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.theme-light input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Preserving high-contrast buttons */
+body.theme-light .bg-emerald-500,
+body.theme-light .bg-emerald-500 span,
+body.theme-light .bg-emerald-400,
+body.theme-light .bg-emerald-400 span {
+  color: #022c22 !important;
+}
+
+body.theme-light .bg-orange-500,
+body.theme-light .bg-orange-500 span {
+  color: #0c0a09 !important;
+}

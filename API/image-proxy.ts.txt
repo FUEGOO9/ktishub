@@ -1,0 +1,44 @@
+import type { RequestContext } from '@vercel/functions';
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const imageUrl = searchParams.get('url');
+
+  if (!imageUrl) {
+    return new Response('Missing image URL', { status: 400 });
+  }
+
+  try {
+    const decodedUrl = decodeURIComponent(imageUrl);
+    
+    let referer = 'https://yupoo.com/';
+    const yupooMatch = decodedUrl.match(/https?:\/\/([^\.]+)\.x\.yupoo\.com/);
+    if (yupooMatch) {
+      referer = `https://${yupooMatch[1]}.x.yupoo.com/`;
+    }
+
+    const response = await fetch(decodedUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': referer,
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+      },
+    });
+
+    if (!response.ok) {
+      return new Response(`Failed to fetch image: ${response.statusText}`, { status: response.status });
+    }
+
+    const blob = await response.blob();
+    const headers = new Headers();
+    headers.set('Content-Type', response.headers.get('Content-Type') || 'image/jpeg');
+    headers.set('Cache-Control', 'public, max-age=2592000, immutable');
+
+    return new Response(blob, {
+      status: 200,
+      headers,
+    });
+  } catch (error) {
+    return new Response('Internal Server Error', { status: 500 });
+  }
+}
