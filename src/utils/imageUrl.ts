@@ -1,4 +1,4 @@
-export function getImageUrl(url: string | undefined | null): string {
+export function getProductImageUrl(url: string | undefined | null): string {
   if (!url) return '';
   
   if (url.includes('yupoo.com') || url.includes('photo.store')) {
