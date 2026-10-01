@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createNowpaymentsInvoice } from '../utils/cryptoPayment';
 import { 
   X, 
   CreditCard, 
@@ -267,7 +268,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       window.location.href = paymentSettings.stripePaymentLink;
       return;
     }
-
+if (method === 'crypto') {
+      try {
+        finalizeOrder(method, 'pending');
+        const invoiceUrl = await createNowpaymentsInvoice({
+          orderId: currentOrderId,
+          amountEur: totalAmount,
+          orderDescription: `Pedido KitsHub #${currentOrderId}`,
+        });
+        window.location.href = invoiceUrl;
+        return;
+      } catch (cryptoErr) {
+        console.error('Error con NOWPayments:', cryptoErr);
+        alert('Hubo un error al conectar con la pasarela de criptomonedas. Por favor, inténtalo de nuevo.');
+        setIsConnectingGateway(false);
+        return;
+      }
+    }
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
