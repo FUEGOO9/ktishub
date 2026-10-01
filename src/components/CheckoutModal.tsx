@@ -1033,85 +1033,26 @@ if (method === 'crypto') {
                 </div>
 
                 {/* Crypto selector buttons */}
-                <div className="grid grid-cols-3 gap-2">
-                  {(['USDT', 'BTC', 'ETH'] as CryptoToken[]).map((token) => (
-                    <button
-                      key={token}
-                      type="button"
-                      onClick={() => setSelectedCrypto(token)}
-                      className={`rounded-xl p-2.5 text-center border font-bold transition ${
-                        selectedCrypto === token
-                          ? 'bg-amber-500 text-neutral-950 border-amber-400 shadow-md'
-                          : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
-                      }`}
-                    >
-                      <div className="text-sm font-black">{token}</div>
-                      <div className="text-[10px] font-normal opacity-80">
-                        {token === 'USDT' ? 'Red TRC20' : token === 'BTC' ? 'Bitcoin' : 'ERC20'}
-                      </div>
-                    </button>
-                  ))}
+                <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-4 text-center space-y-3">
+                <p className="text-xs text-neutral-300">
+                  Serás redirigido a la pasarela segura de <strong className="text-amber-400">NOWPayments</strong> para completar tu pago con <strong>Solana, Litecoin, USDT, Bitcoin, Ethereum</strong> o cualquier otra criptomoneda disponible.
+                </p>
+                <div className="flex justify-between items-center border-t border-neutral-800 pt-2 text-xs">
+                  <span className="text-neutral-400">Total a pagar:</span>
+                  <span className="font-mono font-bold text-emerald-400 text-sm">{totalAmount.toFixed(2)} €</span>
                 </div>
-
-                {/* Wallet Details Box */}
-                <div className="space-y-3 rounded-xl bg-neutral-950/90 p-4 border border-neutral-800">
-                  <div className="flex justify-between items-center text-[11px] text-neutral-400">
-                    <span>Red admitida:</span>
-                    <strong className="text-amber-300">{cryptoWallets[selectedCrypto].network}</strong>
-                  </div>
-
-                  <div>
-                    <span className="text-[11px] text-neutral-400 block mb-1">
-                      Dirección de recepción {selectedCrypto} del vendedor:
-                    </span>
-                    <div className="flex items-center justify-between gap-2 rounded-xl bg-neutral-900 p-2.5 border border-neutral-700/80">
-                      <span className="font-mono text-xs text-white truncate select-all">
-                        {cryptoWallets[selectedCrypto].address}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyCryptoAddress(cryptoWallets[selectedCrypto].address)}
-                        className="shrink-0 flex items-center gap-1 rounded-lg bg-amber-500/20 px-2.5 py-1 text-[11px] font-bold text-amber-300 border border-amber-500/30 hover:bg-amber-500 hover:text-neutral-950 transition"
-                      >
-                        {copiedCryptoAddress ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                        <span>{copiedCryptoAddress ? 'Copiada' : 'Copiar'}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center border-t border-neutral-800 pt-2 text-[11px]">
-                    <span className="text-neutral-400">Importe exacto a enviar:</span>
-                    <span className="font-mono font-bold text-amber-300 text-sm">
-                      {selectedCrypto === 'USDT' ? `${totalAmount.toFixed(2)} USDT` : selectedCrypto === 'BTC' ? `~${(totalAmount / 85000).toFixed(6)} BTC` : `~${(totalAmount / 3200).toFixed(5)} ETH`}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Transaction Hash Input */}
-                <div>
-                  <label className="block text-[11px] text-neutral-300 mb-1 font-medium">
-                    Hash / TXID de la transferencia (opcional para verificación inmediata):
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ej: 0x8a7f... o TxID de Binance / TrustWallet"
-                    value={cryptoTxId}
-                    onChange={(e) => setCryptoTxId(e.target.value)}
-                    className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-3 py-2 text-white placeholder-neutral-500 focus:border-amber-400 focus:outline-none font-mono"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleConfirmOrder('crypto')}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 py-3 text-xs sm:text-sm font-black text-neutral-950 hover:bg-amber-400 transition active:scale-98 shadow-md"
-                >
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>He Enviado los Fondos en Cripto • Confirmar Pedido</span>
-                </button>
               </div>
-            )}
 
+              <button
+                type="button"
+                onClick={() => handleConfirmOrder('crypto')}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
+              </button>
+            </div>
+          )}
 
 
             {/* PAYMENT CONTENT: KLARNA */}
