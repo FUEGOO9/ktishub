@@ -220,7 +220,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative mb-3.5 aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-950 border border-neutral-800/80 flex items-center justify-center p-2">
           {!imgError && product.imageUrl ? (
             <img
-              src={product.imageUrl}
+              src={getProductImageUrl(product.imageUrl)}
               alt={product.title}
               referrerPolicy="no-referrer"
               onError={() => setImgError(true)}
@@ -300,8 +300,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </button>
             </div>
           )}
-
-
         </div>
 
         {/* Title */}
