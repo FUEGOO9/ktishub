@@ -193,7 +193,30 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const totalAmount = subtotal + shippingCost;
 
   const currentOrderId = completedOrder ? completedOrder.id : `PED-${Math.floor(100000 + Math.random() * 900000)}`;
+const handleCryptoPayment = async () => {
+  try {
+    const res = await fetch('/api/create-nowpayments-invoice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price_amount: totalAmount,
+        price_currency: 'EUR',
+        order_id: currentOrderId,
+        order_description: `Pedido ${currentOrderId} - Kitshub`,
+      }),
+    });
 
+    const data = await res.json();
+    if (data.invoice_url) {
+      window.location.href = data.invoice_url;
+    } else {
+      alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error de conexión con la pasarela de pago');
+  }
+};
   const handleCopyPaypal = () => {
     navigator.clipboard.writeText(paypalEmail);
     setCopiedPaypal(true);
@@ -933,7 +956,32 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                 )}
               </div>
             </div>
-
+{/* SELECTOR DE MÉTODO DE PAGO */}
+<div className="grid grid-cols-2 gap-2 mb-4">
+  <button
+    type="button"
+    onClick={() => setPaymentMethod('paypal')}
+    className={`flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition border ${
+      paymentMethod === 'paypal'
+        ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+    }`}
+  >
+    <span>PayPal</span>
+  </button>
+  <button
+    type="button"
+    onClick={() => setPaymentMethod('crypto')}
+    className={`flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition border ${
+      paymentMethod === 'crypto'
+        ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+    }`}
+  >
+    <Coins className="h-3.5 w-3.5" />
+    <span>Criptomonedas</span>
+  </button>
+</div>
             {/* PAYMENT CONTENT 1: PAYPAL */}
             {paymentMethod === 'paypal' && (
               <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-5 space-y-4 text-xs">
@@ -1075,10 +1123,33 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </div>
 
               <button
-                type="button"
-                onClick={() => handleConfirmOrder('crypto')}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
-              >
+  type="button"
+  onClick={handleCryptoPayment}
+  const handleCryptoPayment = async () => {
+    try {
+      const res = await fetch('/api/create-nowpayments-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          price_amount: totalAmount,
+          price_currency: 'EUR',
+          order_id: currentOrderId,
+          order_description: `Pedido ${currentOrderId} - Kitshub`,
+        }),
+      });
+
+      const data = await res.json();
+        window.location.href = data.invoice_url;
+      } else {
+        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión con la pasarela de pago');
+    }
+  };
+  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
+>
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
               </button>
