@@ -317,8 +317,39 @@ if (method === 'crypto') {
       setIsConnectingGateway(false);
     }
   };
+const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
+    if (finalPaymentMethod === 'crypto') {
+      setIsConnectingGateway(true);
+      try {
+        const res = await fetch('/api/create-nowpayments-invoice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            price_amount: totalAmount,
+            price_currency: 'eur',
+            order_id: currentOrderId,
+            order_description: `Pedido ${currentOrderId} - KitsHub`,
+          }),
+        });
 
-  const handleConfirmOrder = (finalPaymentMethod: PaymentMethod) => {
+        const data = await res.json();
+
+        if (data.invoice_url) {
+          finalizeOrder('crypto', 'pending');
+          window.location.href = data.invoice_url;
+          return;
+        } else {
+          alert('Error al conectar con NOWPayments. Inténtalo de nuevo.');
+        }
+      } catch (err) {
+        console.error('Error generando factura NOWPayments:', err);
+        alert('Error de conexión con la pasarela cripto.');
+      } finally {
+        setIsConnectingGateway(false);
+      }
+      return;
+    }
+
     if (finalPaymentMethod === 'card' || finalPaymentMethod === 'klarna') {
       setIsProcessingCard(true);
       setTimeout(() => {
