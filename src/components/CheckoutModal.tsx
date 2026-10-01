@@ -885,7 +885,7 @@ if (method === 'crypto') {
                 )}
 
                 {/* Crypto Tab */}
-                {paymentSettings.acceptCrypto && (
+                {true && (
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('crypto')}
