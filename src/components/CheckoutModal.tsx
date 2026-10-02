@@ -339,6 +339,32 @@ if (method === 'crypto') {
     } finally {
       setIsConnectingGateway(false);
     }
+  }; const handleCryptoPayment = async () => {
+    setIsConnectingGateway(true);
+    try {
+      const res = await fetch('/api/create-nowpayments-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          price_amount: totalAmount,
+          price_currency: 'eur',
+          order_id: currentOrderId,
+          order_description: `Pedido ${currentOrderId} - KitsHub`,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.invoice_url) {
+        window.location.href = data.invoice_url;
+      } else {
+        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
+        setIsConnectingGateway(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión con la pasarela de pago');
+      setIsConnectingGateway(false);
+    }
   };
 const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
     if (finalPaymentMethod === 'crypto') {
@@ -1123,41 +1149,17 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </div>
 
               <button
-  type="button"
-  onClick={handleCryptoPayment}
-  const handleCryptoPayment = async () => {
-    try {
-      const res = await fetch('/api/create-nowpayments-invoice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          price_amount: totalAmount,
-          price_currency: 'EUR',
-          order_id: currentOrderId,
-          order_description: `Pedido ${currentOrderId} - Kitshub`,
-        }),
-      });
-
-      const data = await res.json();
-        window.location.href = data.invoice_url;
-      } else {
-        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error de conexión con la pasarela de pago');
-    }
-  };
-  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
->
+                type="button"
+                onClick={handleCryptoPayment}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
+              >
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
               </button>
             </div>
           )}
 
-
-            {/* PAYMENT CONTENT: KLARNA */}
+          {/* PAYMENT CONTENT: KLARNA */}
             {paymentMethod === 'klarna' && (
               <div className="rounded-2xl border border-[#FFB3C7]/40 bg-[#FFB3C7]/10 p-5 space-y-4 text-xs">
                 <div className="flex items-center justify-between">
