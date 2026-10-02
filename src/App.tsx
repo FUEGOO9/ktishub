@@ -296,7 +296,7 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (!parsed.adminPin || parsed.adminPin === 'admin' || parsed.adminPin === '1234') {
-          parsed.adminPin = '$hjL$g}Z)%Z7.$pD';
+          parsed.adminPin = 't.il]?YDY^dC5EC^';
           localStorage.setItem('kitshub_payment_settings_v1', JSON.stringify(parsed));
         }
         return parsed;
@@ -304,7 +304,7 @@ export default function App() {
     } catch {
       // ignore
     }
-    return { ...DEFAULT_PAYMENT_SETTINGS, adminPin: '$hjL$g}Z)%Z7.$pD' };
+    return { ...DEFAULT_PAYMENT_SETTINGS, adminPin: 't.il]?YDY^dC5EC^' };
   });
 
   const handleToggleAdminMode = () => {
@@ -322,9 +322,9 @@ export default function App() {
   const handleVerifyAdminPin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const userInput = adminPinInput.trim();
-    const requiredPin = (paymentSettings.adminPin || '$hjL$g}Z)%Z7.$pD').trim();
+    const requiredPin = (paymentSettings.adminPin || 't.il]?YDY^dC5EC^').trim();
 
-    if (userInput === requiredPin || userInput === '$hjL$g}Z)%Z7.$pD') {
+    if (userInput === requiredPin || userInput === 't.il]?YDY^dC5EC^') {
       setIsAdminMode(true);
       setIsAdminPinModalOpen(false);
       setAdminPinInput('');
