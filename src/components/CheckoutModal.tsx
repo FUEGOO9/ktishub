@@ -1096,38 +1096,32 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </div>
             )}
 
-            {/* PAYMENT CONTENT 2: CRYPTO */}
-            {paymentMethod === 'crypto' && (
-  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-4 text-xs">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Coins className="h-4 w-4 text-amber-400" />
-                    <span className="font-bold text-white text-sm">
-                      Pago con Criptomonedas (Web3)
-                    </span>
-                  </div>
-                  <span className="rounded bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-400/30">
-                    Sin comisiones bancarias
-                  </span>
-                </div>
-
-                {/* Crypto selector buttons */}
-                <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-4 text-center space-y-3">
+           {paymentMethod === 'crypto' && (
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-4 text-xs">
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                <span>Pago con Criptomonedas</span>
+              </div>
+              <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-4 text-center space-y-3">
                 <p className="text-xs text-neutral-300">
-                  Serás redirigido a la pasarela segura de <strong className="text-amber-400">NOWPayments</strong> para completar tu pago con <strong>Solana, Litecoin, USDT, Bitcoin, Ethereum</strong> o cualquier otra criptomoneda disponible.
+                  Serás redirigido a la pasarela segura de <strong className="text-amber-400">NOWPayments</strong> para completar tu pago.
                 </p>
                 <div className="flex justify-between items-center border-t border-neutral-800 pt-2 text-xs">
                   <span className="text-neutral-400">Total a pagar:</span>
                   <span className="font-mono font-bold text-emerald-400 text-sm">{totalAmount.toFixed(2)} €</span>
+                </div>
                 <button
                   type="button"
                   onClick={handleCryptoPayment}
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
                 >
                   <CheckCircle2 className="h-4 w-4" />
-                 <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
+                  <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
+                </button>
+              </div>
+            </div>
+          )}
 
-          {/* PAYMENT CONTENT: KLARNA */}
+           {/* PAYMENT CONTENT: KLARNA */}
             {paymentMethod === 'klarna' && (
               <div className="rounded-2xl border border-[#FFB3C7]/40 bg-[#FFB3C7]/10 p-5 space-y-4 text-xs">
                 <div className="flex items-center justify-between">
