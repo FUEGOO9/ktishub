@@ -937,20 +937,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
           </div>
         )}
-
-        {/* PASO 3: CONFIRMACIÓN Y RECIBO */}
+              {/* PASO 3: CONFIRMACIÓN Y RECIBO */}
         {step === 'confirmation' && completedOrder && (
           <div className="p-6 sm:p-8 space-y-6 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${
+              completedOrder.paymentMethod === 'crypto' 
+                ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' 
+                : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+            }`}>
               <CheckCircle2 className="h-10 w-10 stroke-[2.2]" />
             </div>
 
             <div className="space-y-1">
               <h3 className="text-xl sm:text-2xl font-black text-white">
-                ¡Muchas Gracias por tu Compra, {completedOrder.customer.name.split(' ')[0]}!
+                ¡Pedido Registrado, {completedOrder.customer.name.split(' ')[0]}!
               </h3>
-              <p className="text-xs sm:text-sm text-neutral-400">
-                Tu pedido ha sido registrado con éxito y preparado para expedición inmediata.
+              <p className="text-xs sm:text-sm font-bold text-amber-400 bg-amber-950/40 py-2 px-3 rounded-lg border border-amber-500/20 inline-block mt-2">
+                ⚠️ ESTADO: PENDIENTE DE VERIFICACIÓN DE PAGO
+              </p>
+              <p className="text-xs sm:text-sm text-neutral-400 mt-3">
+                {completedOrder.paymentMethod === 'bizum' && 'Recuerda escribirnos por X (@GxlDeCuti) o al soporte para confirmar tu Bizum y procesar el envío.'}
+                {completedOrder.paymentMethod === 'paypal' && 'Estamos verificando la recepción de tu transferencia en PayPal. Una vez confirmada, procesaremos tu envío.'}
+                {completedOrder.paymentMethod === 'crypto' && 'La red está validando tu pago. Confirmaremos el pedido automáticamente.'}
               </p>
             </div>
 
@@ -958,60 +966,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
                 <div>
                   <span className="text-[11px] text-neutral-400 block">Número de Pedido:</span>
-                  <span className="font-mono text-base font-black text-emerald-400">
+                  <span className="font-mono text-base font-black text-white">
                     {completedOrder.id}
                   </span>
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] text-neutral-400 block">Fecha:</span>
-                  <span className="text-neutral-300">{completedOrder.date}</span>
+                  <span className="text-neutral-300">{completedOrder.date.split('T')[0]}</span>
                 </div>
-              </div>
-
-              <div className="space-y-1.5 py-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 block">
-                  Artículos:
-                </span>
-                {completedOrder.items.map((item, i) => (
-                  <div key={i} className="flex justify-between text-neutral-300">
-                    <span>
-                      {item.quantity}x {item.product.title} ({item.selectedEdition || 'FAN VERSION'} • Talla {item.selectedSize})
-                      {item.customization?.number && ` • Dorsal: #${item.customization.number} ${item.customization.name || ''}`}
-                      {item.customization?.patch && ` • Parche: ${item.customization.patch}`}
-                    </span>
-                    <span className="font-mono text-white">
-                      {((item.product.price || 24.99) * item.quantity).toFixed(2)} €
-                    </span>
-                  </div>
-                ))}
               </div>
 
               <div className="border-t border-neutral-800 pt-3 space-y-1 text-neutral-300">
-                <div className="flex justify-between">
-                  <span>Envío ({completedOrder.customer.country || 'Destino'}):</span>
-                  <span className={completedOrder.shippingCost === 0 ? 'text-emerald-400 font-bold' : 'font-bold'}>
-                    {completedOrder.shippingCost === 0 ? 'GRATIS (Promoción 3+ prendas)' : `${completedOrder.shippingCost.toFixed(2)} €`}
-                  </span>
-                </div>
-                <div className="flex justify-between font-bold text-sm text-white">
-                  <span>Total Pagado:</span>
+                <div className="flex justify-between font-bold text-sm text-white mb-2">
+                  <span>Total del Pedido:</span>
                   <span className="font-mono text-emerald-400">{completedOrder.total.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between text-[11px] text-neutral-400 pt-1">
-                  <span>Método de pago: {completedOrder.paymentMethod.toUpperCase()}</span>
-                  <span className="text-emerald-400 font-semibold">{completedOrder.estimatedDelivery}</span>
+                  <span>Método elegido: <strong className="text-white">{completedOrder.paymentMethod.toUpperCase()}</strong></span>
                 </div>
-              </div>
-
-              <div className="border-t border-neutral-800 pt-3 text-[11px] text-neutral-400">
-                <span className="font-bold text-neutral-300 block mb-0.5">Dirección de entrega internacional:</span>
-                <p>{completedOrder.customer.address}, {completedOrder.customer.postalCode} {completedOrder.customer.city} ({completedOrder.customer.country || 'Internacional'})</p>
-                <p className="mt-1 flex items-center gap-1.5 flex-wrap">
-                  <span className="font-semibold text-neutral-300">Teléfono con prefijo para el transportista:</span>
-                  <span className="font-mono text-emerald-400 font-bold bg-neutral-900 px-1.5 py-0.5 rounded border border-neutral-800">
-                    {completedOrder.customer.phone}
-                  </span>
-                </p>
               </div>
             </div>
 
@@ -1019,9 +991,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-2xl bg-emerald-500 px-6 py-3 text-xs font-black text-neutral-950 hover:bg-emerald-400 transition"
+                className="rounded-2xl bg-neutral-800 px-6 py-3 text-xs font-black text-white hover:bg-neutral-700 transition"
               >
-                Seguir Explorando la Tienda
+                Cerrar y Volver a la Tienda
               </button>
             </div>
           </div>
