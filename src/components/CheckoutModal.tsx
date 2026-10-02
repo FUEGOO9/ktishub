@@ -337,8 +337,9 @@ if (method === 'crypto') {
       console.warn('Fallback local order', e);
       handleConfirmOrder(method);
     } finally {
-      setIsConnectingGateway(false);
-    }
+setIsConnectingGateway(false);
+  }
+};
 const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
     if (finalPaymentMethod === 'crypto') {
       setIsConnectingGateway(true);
@@ -1097,7 +1098,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
 
             {/* PAYMENT CONTENT 2: CRYPTO */}
             {paymentMethod === 'crypto' && (
-              <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-5 space-y-4 text-xs">
+  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-4 text-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Coins className="h-4 w-4 text-amber-400" />
@@ -1118,19 +1119,16 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                 <div className="flex justify-between items-center border-t border-neutral-800 pt-2 text-xs">
                   <span className="text-neutral-400">Total a pagar:</span>
                   <span className="font-mono font-bold text-emerald-400 text-sm">{totalAmount.toFixed(2)} €</span>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleCryptoPayment}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
+                </button>
               </div>
-
-              <button
-                type="button"
-                onClick={handleCryptoPayment}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
-              </button>
-            </div>
-          )}
+            )}
 
           {/* PAYMENT CONTENT: KLARNA */}
             {paymentMethod === 'klarna' && (
@@ -1421,6 +1419,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
           </div>
         )}
       </div>
-    </div>
+</div>
   );
 };
