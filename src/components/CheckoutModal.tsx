@@ -339,33 +339,6 @@ if (method === 'crypto') {
     } finally {
       setIsConnectingGateway(false);
     }
-  }; const handleCryptoPayment = async () => {
-    setIsConnectingGateway(true);
-    try {
-      const res = await fetch('/api/create-nowpayments-invoice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          price_amount: totalAmount,
-          price_currency: 'eur',
-          order_id: currentOrderId,
-          order_description: `Pedido ${currentOrderId} - KitsHub`,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.invoice_url) {
-        window.location.href = data.invoice_url;
-      } else {
-        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
-        setIsConnectingGateway(false);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error de conexión con la pasarela de pago');
-      setIsConnectingGateway(false);
-    }
-  };
 const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
     if (finalPaymentMethod === 'crypto') {
       setIsConnectingGateway(true);
