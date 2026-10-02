@@ -2,35 +2,28 @@ import React, { useState } from 'react';
 import { createNowpaymentsInvoice } from '../utils/cryptoPayment';
 import { 
   X, 
-  CreditCard, 
   CheckCircle2, 
-  ShieldCheck, 
-  Truck, 
-  Copy, 
-  Check, 
+  ShoppingBag, 
+  Coins, 
+  ExternalLink, 
+  Smartphone, 
+  Globe, 
+  Minus, 
+  Plus, 
+  Trash2, 
   ArrowRight, 
   ArrowLeft,
-  ShoppingBag,
-  Lock,
-  Coins,
-  Wallet,
-  ExternalLink,
-  Smartphone,
-  Settings,
-  Globe,
-  Minus,
-  Plus,
-  Trash2
+  Copy,
+  Check
 } from 'lucide-react';
 import { 
   CartItem, 
   CustomerDetails, 
   Order, 
-  PaymentMethod, 
   PaymentSettings, 
   DEFAULT_PAYMENT_SETTINGS,
   calculateShippingInfo,
-  isEUCountry
+  PaymentMethod
 } from '../types';
 
 export interface CountryCodeItem {
@@ -86,8 +79,6 @@ interface CheckoutModalProps {
   onOpenLegal?: (tab: 'terms' | 'privacy' | 'shipping' | 'returns' | 'legal') => void;
 }
 
-type CryptoToken = 'USDT' | 'BTC' | 'ETH';
-
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
   onClose,
@@ -97,20 +88,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onRemoveItem,
   onOrderCompleted,
   paymentSettings = DEFAULT_PAYMENT_SETTINGS,
-  onOpenSettings,
   onOpenLegal,
 }) => {
   const [step, setStep] = useState<'details' | 'payment' | 'confirmation'>('details');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() => {
-    if (paymentSettings.acceptCard) return 'card';
-    if (paymentSettings.klarnaEnabled) return 'klarna';
-    if (paymentSettings.acceptPaypal) return 'paypal';
-    if (paymentSettings.acceptCrypto) return 'crypto';
-    return 'card';
-  });
-
-  // Gateway connection state (Stripe / Klarna)
-  const [isConnectingGateway, setIsConnectingGateway] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'bizum' | 'paypal' | 'crypto'>('bizum');
 
   // Customer details
   const [customer, setCustomer] = useState<CustomerDetails>({
@@ -136,40 +117,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   // Effective payment settings
   const paypalEmail = paymentSettings.paypalEmail || 'elfuegodelawwe@gmail.com';
   const paypalMeUsername = paymentSettings.paypalMeUsername || '';
-  const cryptoWallets: Record<CryptoToken, { network: string; address: string; symbol: string }> = {
-    USDT: {
-      network: 'TRON (TRC20) - Comisión mínima',
-      address: paymentSettings.usdtTrc20Address || 'TXb7g9LqK8w7f5mP92kV1uN3xR6sY4zQ1w',
-      symbol: 'USDT',
-    },
-    BTC: {
-      network: 'Bitcoin SegWit',
-      address: paymentSettings.btcAddress || 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
-      symbol: 'BTC',
-    },
-    ETH: {
-      network: 'Ethereum (ERC20)',
-      address: paymentSettings.ethAddress || '0x71C8366420Aaa4171559868C6A53F3fD04646738',
-      symbol: 'ETH',
-    },
-  };
 
   // PayPal state
   const [customerPaypalEmail, setCustomerPaypalEmail] = useState<string>('');
   const [copiedPaypal, setCopiedPaypal] = useState(false);
   const [copiedOrderCode, setCopiedOrderCode] = useState(false);
-
-  // Crypto state
-  const [selectedCrypto, setSelectedCrypto] = useState<CryptoToken>('USDT');
-  const [cryptoTxId, setCryptoTxId] = useState('');
-  const [copiedCryptoAddress, setCopiedCryptoAddress] = useState(false);
-
-  // Card details
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-  const [isProcessingCard, setIsProcessingCard] = useState(false);
 
   // Completed order
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
@@ -183,50 +135,41 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     0
   );
   
-  // Dynamic shipping calculation according to store policy:
-  // - 3 or more items (>= 3): FREE shipping worldwide (0 €)
-  // - Less than 3 items (< 3):
-  //     * EU countries: 7.00 € (4.00 € base + 3.00 € new EU tariffs)
-  //     * Outside EU: 4.00 €
   const shippingInfo = calculateShippingInfo(totalItemsCount, destinationCountry);
   const shippingCost = shippingInfo.shippingCost;
   const totalAmount = subtotal + shippingCost;
 
   const currentOrderId = completedOrder ? completedOrder.id : `PED-${Math.floor(100000 + Math.random() * 900000)}`;
-const handleCryptoPayment = async () => {
-  try {
-    const res = await fetch('/api/create-nowpayments-invoice', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        price_amount: totalAmount,
-        price_currency: 'EUR',
-        order_id: currentOrderId,
-        order_description: `Pedido ${currentOrderId} - Kitshub`,
-      }),
-    });
 
-    const data = await res.json();
-    if (data.invoice_url) {
-      window.location.href = data.invoice_url;
-    } else {
-      alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
+  const handleCryptoPayment = async () => {
+    try {
+      const res = await fetch('/api/create-nowpayments-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          price_amount: totalAmount,
+          price_currency: 'EUR',
+          order_id: currentOrderId,
+          order_description: `Pedido ${currentOrderId} - Kitshub`,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.invoice_url) {
+        window.location.href = data.invoice_url;
+      } else {
+        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión con la pasarela de pago');
     }
-  } catch (err) {
-    console.error(err);
-    alert('Error de conexión con la pasarela de pago');
-  }
-};
+  };
+
   const handleCopyPaypal = () => {
     navigator.clipboard.writeText(paypalEmail);
     setCopiedPaypal(true);
     setTimeout(() => setCopiedPaypal(false), 2000);
-  };
-
-  const handleCopyCryptoAddress = (address: string) => {
-    navigator.clipboard.writeText(address);
-    setCopiedCryptoAddress(true);
-    setTimeout(() => setCopiedCryptoAddress(false), 2000);
   };
 
   const handleCopyOrderRef = () => {
@@ -283,108 +226,11 @@ const handleCryptoPayment = async () => {
     setStep('payment');
   };
 
-  const handleStripeOrKlarnaCheckout = async (method: 'card' | 'klarna') => {
-    setIsConnectingGateway(true);
-
-    if (paymentSettings.stripePaymentLink) {
-      finalizeOrder(method, 'pending');
-      window.location.href = paymentSettings.stripePaymentLink;
-      return;
-    }
-if (method === 'crypto') {
-      try {
-        finalizeOrder(method, 'pending');
-        const invoiceUrl = await createNowpaymentsInvoice({
-          orderId: currentOrderId,
-          amountEur: totalAmount,
-          orderDescription: `Pedido KitsHub #${currentOrderId}`,
-        });
-        window.location.href = invoiceUrl;
-        return;
-      } catch (cryptoErr) {
-        console.error('Error con NOWPayments:', cryptoErr);
-        alert('Hubo un error al conectar con la pasarela de criptomonedas. Por favor, inténtalo de nuevo.');
-        setIsConnectingGateway(false);
-        return;
-      }
-    }
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId: currentOrderId,
-          amount: totalAmount,
-          customer,
-          paymentMethod: method,
-          items: cartItems.map((item) => ({
-            title: item.product.title,
-            quantity: item.quantity,
-          })),
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.url) {
-        finalizeOrder(method, 'pending');
-        window.location.href = data.url;
-        return;
-      }
-
-      // Fallback
-      handleConfirmOrder(method);
-    } catch (e) {
-      console.warn('Fallback local order', e);
-      handleConfirmOrder(method);
-    } finally {
-setIsConnectingGateway(false);
-  }
-};
-const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
-    if (finalPaymentMethod === 'crypto') {
-      setIsConnectingGateway(true);
-      try {
-        const res = await fetch('/api/create-nowpayments-invoice', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            price_amount: totalAmount,
-            price_currency: 'eur',
-            order_id: currentOrderId,
-            order_description: `Pedido ${currentOrderId} - KitsHub`,
-          }),
-        });
-
-        const data = await res.json();
-
-        if (data.invoice_url) {
-          finalizeOrder('crypto', 'pending');
-          window.location.href = data.invoice_url;
-          return;
-        } else {
-          alert('Error al conectar con NOWPayments. Inténtalo de nuevo.');
-        }
-      } catch (err) {
-        console.error('Error generando factura NOWPayments:', err);
-        alert('Error de conexión con la pasarela cripto.');
-      } finally {
-        setIsConnectingGateway(false);
-      }
-      return;
-    }
-
-    if (finalPaymentMethod === 'card' || finalPaymentMethod === 'klarna') {
-      setIsProcessingCard(true);
-      setTimeout(() => {
-        setIsProcessingCard(false);
-        finalizeOrder(finalPaymentMethod, 'paid');
-      }, 1500);
-    } else {
-      finalizeOrder(finalPaymentMethod, 'pending');
-    }
+  const handleConfirmOrder = (finalPaymentMethod: 'bizum' | 'paypal' | 'crypto') => {
+    finalizeOrder(finalPaymentMethod, 'pending');
   };
 
-  const finalizeOrder = (method: PaymentMethod, status: 'pending' | 'paid') => {
+  const finalizeOrder = (method: 'bizum' | 'paypal' | 'crypto', status: 'pending' | 'paid') => {
     const order: Order = {
       id: currentOrderId,
       customer,
@@ -392,13 +238,12 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
       subtotal,
       shippingCost,
       total: totalAmount,
-      paymentMethod: method,
+      paymentMethod: method as PaymentMethod,
       paymentStatus: status,
-      orderStatus: status === 'paid' ? 'processing' : 'pending',
+      orderStatus: 'pending',
       carrier: 'CTT Express',
-      cryptoCurrency: method === 'crypto' ? selectedCrypto : undefined,
-      cryptoTxId: method === 'crypto' ? cryptoTxId : undefined,
       paypalAccountEmail: method === 'paypal' ? customerPaypalEmail || customer.email : undefined,
+      cryptoCurrency: method === 'crypto' ? 'USDT' : undefined,
       date: new Date().toISOString(),
       estimatedDelivery: 'Envío asegurado con CTT Express y número de seguimiento',
     };
@@ -426,7 +271,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
             </div>
             <p className="text-xs text-neutral-400 mt-0.5">
               {step === 'details' && 'Indica la dirección donde deseas recibir las prendas'}
-              {step === 'payment' && 'Elige entre Tarjeta, Klarna (3 plazos sin intereses), PayPal o Cripto'}
+              {step === 'payment' && 'Elige entre Bizum, PayPal o Criptomonedas'}
               {step === 'confirmation' && 'Hemos recibido tu pedido correctamente'}
             </p>
           </div>
@@ -440,9 +285,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
           </button>
         </div>
 
-        {/* ========================================================================= */}
-        {/* PASO 1: DATOS DE ENVÍO                                                    */}
-        {/* ========================================================================= */}
+        {/* PASO 1: DATOS DE ENVÍO */}
         {step === 'details' && (
           <form onSubmit={handleProceedToPayment} className="p-6 space-y-5 text-xs">
             {/* Cart Preview Summary in Checkout */}
@@ -568,7 +411,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </div>
             </div>
 
-            {/* Error Notification if required fields are missing */}
+            {/* Error Notification */}
             {detailsError && (
               <div className="rounded-2xl border border-red-500/40 bg-red-950/40 p-3.5 text-xs text-red-200 flex items-start gap-2.5">
                 <span className="text-base leading-none">⚠️</span>
@@ -639,7 +482,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   </select>
                 </div>
 
-                {/* Teléfono Móvil con Selector de Prefijo Internacional */}
+                {/* Teléfono */}
                 <div className="sm:col-span-2">
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-[11px] text-neutral-300 font-semibold flex items-center gap-1.5">
@@ -652,7 +495,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   </div>
 
                   <div className="flex gap-2">
-                    {/* Selector de Prefijo */}
                     <div className="w-36 sm:w-48 shrink-0">
                       <select
                         value={selectedPrefix}
@@ -666,7 +508,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                           if (detailsError) setDetailsError(null);
                         }}
                         className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-2.5 py-2 text-xs font-bold text-white focus:border-emerald-500 focus:outline-none truncate"
-                        title="Selecciona el prefijo telefónico de tu país"
                       >
                         {INTERNATIONAL_COUNTRY_CODES.map((item) => (
                           <option key={item.code} value={item.prefix}>
@@ -676,7 +517,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                       </select>
                     </div>
 
-                    {/* Si seleccionó Otro país / personalizado */}
                     {selectedPrefix === '+' && (
                       <div className="w-20 shrink-0">
                         <input
@@ -688,12 +528,10 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                             if (detailsError) setDetailsError(null);
                           }}
                           className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-2 py-2 text-center text-xs font-mono font-bold text-emerald-400 focus:border-emerald-500 focus:outline-none"
-                          title="Escribe tu prefijo internacional"
                         />
                       </div>
                     )}
 
-                    {/* Número de Teléfono */}
                     <div className="flex-1">
                       <input
                         type="tel"
@@ -709,7 +547,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                     </div>
                   </div>
 
-                  {/* Indicador de Formato y Ayuda Internacional */}
                   <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 text-[10px] text-neutral-400 px-1">
                     <span className="flex items-center gap-1.5">
                       <Globe className="h-3 w-3 text-emerald-400" />
@@ -724,7 +561,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   </div>
                 </div>
 
-                {/* Email de Confirmación */}
+                {/* Email */}
                 <div className="sm:col-span-2">
                   <label className="block text-[11px] text-neutral-400 mb-1 font-medium">
                     Email de confirmación y factura *
@@ -742,7 +579,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   />
                 </div>
 
-                {/* Dirección Completa */}
+                {/* Dirección */}
                 <div className="sm:col-span-2">
                   <label className="block text-[11px] text-neutral-400 mb-1 font-medium">
                     Dirección (Calle, Número, Piso, Puerta o Apartamento) *
@@ -760,7 +597,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   />
                 </div>
 
-                {/* Código Postal */}
+                {/* CP */}
                 <div>
                   <label className="block text-[11px] text-neutral-400 mb-1 font-medium">
                     Código Postal (ZIP / Postcode) *
@@ -778,7 +615,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   />
                 </div>
 
-                {/* Ciudad / Población */}
+                {/* Ciudad */}
                 <div>
                   <label className="block text-[11px] text-neutral-400 mb-1 font-medium">
                     Ciudad / Población *
@@ -848,149 +685,125 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
           </form>
         )}
 
-        {/* ========================================================================= */}
-        {/* PASO 2: MÉTODOS DE PAGO (PAYPAL, CRYPTO, TARJETA)                          */}
-        {/* ========================================================================= */}
+        {/* PASO 2: MÉTODOS DE PAGO */}
         {step === 'payment' && (
           <div className="p-6 space-y-6">
-            {/* Amount to pay banner with detailed breakdown */}
-            <div className="rounded-2xl bg-gradient-to-r from-emerald-950/60 to-neutral-900 p-4 border border-emerald-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-neutral-300">Total a pagar:</span>
-                  <div className="font-mono text-2xl font-black text-emerald-400">
-                    {totalAmount.toFixed(2)} €
-                  </div>
-                </div>
-                <div className="text-right text-xs text-neutral-400">
-                  <span className="font-semibold text-neutral-200">Destinatario: {customer.name}</span>
-                  <span className="block text-[11px] text-neutral-400">{customer.city}, {customer.country}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between border-t border-neutral-800/80 pt-2 text-[11px] text-neutral-400 gap-2">
-                <span>Subtotal ({totalItemsCount} prendas): <strong className="text-neutral-200">{subtotal.toFixed(2)} €</strong></span>
-                <span>
-                  Gastos de Envío:{' '}
-                  <strong className={shippingInfo.isFree ? 'text-emerald-400' : 'text-amber-300'}>
-                    {shippingInfo.badge}
-                  </strong>
-                </span>
-              </div>
+            {/* Amount banner */}
+            <div className="rounded-2xl bg-gradient-to-r from-emerald-950/60 to-neutral-900 p-4 border border-emerald-500/30 flex justify-between items-center text-xs">
+              <span className="text-neutral-300">Total a pagar con envío:</span>
+              <span className="font-mono text-emerald-400 font-extrabold text-base">{totalAmount.toFixed(2)} €</span>
             </div>
 
             {/* Payment method selector tabs */}
             <div>
               <label className="block text-xs font-bold text-white uppercase tracking-wider mb-2">
-                Selecciona método de pago seguro:
+                Selecciona método de pago:
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                {/* Card Tab (Stripe) */}
-                {paymentSettings.acceptCard && (
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('card')}
-                    className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
-                      paymentMethod === 'card'
-                        ? 'bg-emerald-950/50 border-emerald-400 text-emerald-300 font-bold ring-2 ring-emerald-400/20 shadow-md'
-                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
-                    }`}
-                  >
-                    <CreditCard className="h-5 w-5 mb-1 text-emerald-400" />
-                    <span className="font-black text-xs sm:text-sm">Tarjeta</span>
-                    <span className="text-[10px] text-emerald-400/80 font-normal">Visa • MC • Apple Pay</span>
-                  </button>
-                )}
-
-                {/* Klarna Tab */}
-                {paymentSettings.klarnaEnabled && (
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('klarna')}
-                    className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
-                      paymentMethod === 'klarna'
-                        ? 'bg-[#FFB3C7]/15 border-[#FFB3C7] text-[#FFB3C7] font-bold ring-2 ring-[#FFB3C7]/20 shadow-md'
-                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
-                    }`}
-                  >
-                    <span className="font-black text-xs text-[#FFB3C7] mb-1">Klarna.</span>
-                    <span className="font-black text-xs sm:text-sm">3 Plazos</span>
-                    <span className="text-[10px] text-[#FFB3C7]/80 font-normal">Sin intereses (0% TAE)</span>
-                  </button>
-                )}
-
-
+              <div className="grid grid-cols-3 gap-2.5 text-xs mb-4">
+                {/* Bizum Tab */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('bizum')}
+                  className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
+                    paymentMethod === 'bizum'
+                      ? 'bg-emerald-950/50 border-emerald-400 text-emerald-300 font-bold ring-2 ring-emerald-400/20 shadow-md'
+                      : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
+                  }`}
+                >
+                  <span className="font-black text-xs sm:text-sm text-emerald-400">Bizum</span>
+                  <span className="text-[10px] text-neutral-400 font-normal mt-0.5">Por privado</span>
+                </button>
 
                 {/* PayPal Tab */}
-                {paymentSettings.acceptPaypal && (
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('paypal')}
-                    className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
-                      paymentMethod === 'paypal'
-                        ? 'bg-blue-950/40 border-blue-400 text-blue-300 font-bold ring-2 ring-blue-400/20 shadow-md'
-                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
-                    }`}
-                  >
-                    <Wallet className="h-5 w-5 mb-1 text-blue-400" />
-                    <span className="font-black text-xs sm:text-sm">PayPal</span>
-                    <span className="text-[10px] text-blue-400/80 font-normal">Protección oficial</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('paypal')}
+                  className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
+                    paymentMethod === 'paypal'
+                      ? 'bg-blue-950/50 border-blue-400 text-blue-300 font-bold ring-2 ring-blue-400/20 shadow-md'
+                      : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
+                  }`}
+                >
+                  <span className="font-black text-xs sm:text-sm text-blue-400">PayPal</span>
+                  <span className="text-[10px] text-neutral-400 font-normal mt-0.5">Envío manual</span>
+                </button>
 
                 {/* Crypto Tab */}
-                {true && (
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('crypto')}
-                    className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
-                      paymentMethod === 'crypto'
-                        ? 'bg-amber-950/40 border-amber-400 text-amber-300 font-bold ring-2 ring-amber-400/20 shadow-md'
-                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
-                    }`}
-                  >
-                    <Coins className="h-5 w-5 mb-1 text-amber-400" />
-                    <span className="font-black text-xs sm:text-sm">Crypto</span>
-                    <span className="text-[10px] text-amber-400/80 font-normal">USDT / BTC</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('crypto')}
+                  className={`flex flex-col items-center justify-center rounded-2xl p-3 border transition ${
+                    paymentMethod === 'crypto'
+                      ? 'bg-amber-950/50 border-amber-400 text-amber-300 font-bold ring-2 ring-amber-400/20 shadow-md'
+                      : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
+                  }`}
+                >
+                  <Coins className="h-4 w-4 mb-0.5 text-amber-400" />
+                  <span className="font-black text-xs sm:text-sm text-amber-400">Crypto</span>
+                  <span className="text-[10px] text-neutral-400 font-normal mt-0.5">USDT / BTC</span>
+                </button>
               </div>
             </div>
-{/* SELECTOR DE MÉTODO DE PAGO */}
-<div className="grid grid-cols-2 gap-2 mb-4">
-  <button
-    type="button"
-    onClick={() => setPaymentMethod('paypal')}
-    className={`flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition border ${
-      paymentMethod === 'paypal'
-        ? 'bg-blue-600/20 border-blue-500 text-blue-300'
-        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
-    }`}
-  >
-    <span>PayPal</span>
-  </button>
-  <button
-    type="button"
-    onClick={() => setPaymentMethod('crypto')}
-    className={`flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-bold transition border ${
-      paymentMethod === 'crypto'
-        ? 'bg-amber-500/20 border-amber-500 text-amber-300'
-        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
-    }`}
-  >
-    <Coins className="h-3.5 w-3.5" />
-    <span>Criptomonedas</span>
-  </button>
-</div>
-            {/* PAYMENT CONTENT 1: PAYPAL */}
+
+            {/* PAYMENT CONTENT: BIZUM */}
+            {paymentMethod === 'bizum' && (
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-5 space-y-4 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-400 text-sm">Pago con Bizum</span>
+                  <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30">
+                    Atención Directa
+                  </span>
+                </div>
+
+                <div className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-4 space-y-3">
+                  <p className="text-neutral-300 leading-relaxed">
+                    Para abonar mediante <strong>Bizum</strong>, escríbenos por privado con tu referencia de pedido:
+                  </p>
+
+                  <div className="space-y-2 pt-1">
+                    <a
+                      href="https://x.com/GxlDeCuti"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-3 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-neutral-700 transition-colors"
+                    >
+                      <span className="text-neutral-400">Hablar por privado en X:</span>
+                      <span className="font-mono font-bold text-emerald-400">@GxlDeCuti</span>
+                    </a>
+
+                    <a
+                      href="mailto:soporte@kitshub.com"
+                      className="flex items-center justify-between p-3 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-neutral-700 transition-colors"
+                    >
+                      <span className="text-neutral-400">Correo de soporte:</span>
+                      <span className="font-mono font-bold text-emerald-400">soporte@kitshub.com</span>
+                    </a>
+                  </div>
+
+                  <div className="flex justify-between items-center border-t border-neutral-800 pt-3 text-xs">
+                    <span className="text-neutral-400">Total a transferir:</span>
+                    <span className="font-mono font-bold text-emerald-400 text-sm">{totalAmount.toFixed(2)} €</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleConfirmOrder('bizum')}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-emerald-500/10"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Confirmar Pedido (Pendiente de Bizum)</span>
+                </button>
+              </div>
+            )}
+
+            {/* PAYMENT CONTENT: PAYPAL */}
             {paymentMethod === 'paypal' && (
               <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-5 space-y-4 text-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="flex h-3 w-3 rounded-full bg-blue-400 animate-pulse"></span>
-                    <span className="font-bold text-white text-sm">
-                      Pago Oficial con PayPal
-                    </span>
+                    <span className="font-bold text-white text-sm">Pago Oficial con PayPal</span>
                   </div>
                   <span className="rounded bg-blue-400/20 px-2 py-0.5 text-[10px] font-bold text-blue-300 border border-blue-400/30">
                     Instantáneo & Seguro
@@ -998,12 +811,9 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                 </div>
 
                 <div className="space-y-3 rounded-xl bg-neutral-950/90 p-4 border border-neutral-800">
-                  {/* Store PayPal Account */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[11px] text-neutral-400 block">
-                        Cuenta PayPal del vendedor:
-                      </span>
+                      <span className="text-[11px] text-neutral-400 block">Cuenta PayPal del vendedor:</span>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="font-mono text-sm sm:text-base font-black tracking-wide text-blue-300 select-all">
                           {paypalEmail}
@@ -1020,15 +830,10 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                     </button>
                   </div>
 
-                  {/* Concept Reference */}
                   <div className="flex items-center justify-between border-t border-neutral-800 pt-3">
                     <div>
-                      <span className="text-[11px] text-neutral-400 block">
-                        Referencia obligatoria para la nota de PayPal:
-                      </span>
-                      <span className="font-mono font-bold text-white text-sm">
-                        {currentOrderId}
-                      </span>
+                      <span className="text-[11px] text-neutral-400 block">Referencia obligatoria para la nota de PayPal:</span>
+                      <span className="font-mono font-bold text-white text-sm">{currentOrderId}</span>
                     </div>
                     <button
                       type="button"
@@ -1041,14 +846,12 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   </div>
                 </div>
 
-                {/* Instructions */}
                 <div className="text-[11px] text-neutral-300 space-y-1 pl-1">
                   <p>1. Entra a <strong>PayPal</strong> o abre tu aplicación.</p>
                   <p>2. Envía <strong>{totalAmount.toFixed(2)} €</strong> a <strong>{paypalEmail}</strong>.</p>
                   <p>3. En el concepto pon tu código <strong>{currentOrderId}</strong>.</p>
                 </div>
 
-                {/* Direct PayPal Link Button */}
                 {paypalMeUsername ? (
                   <a
                     href={`https://paypal.me/${paypalMeUsername}/${totalAmount.toFixed(2)}EUR`}
@@ -1071,7 +874,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   </a>
                 )}
 
-                {/* Customer PayPal email verification */}
                 <div>
                   <label className="block text-[11px] text-neutral-300 mb-1 font-medium">
                     Tu correo de PayPal o nombre con el que pagaste:
@@ -1096,205 +898,27 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </div>
             )}
 
-           {paymentMethod === 'crypto' && (
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-4 text-xs">
-              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                <span>Pago con Criptomonedas</span>
-              </div>
-              <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-4 text-center space-y-3">
-                <p className="text-xs text-neutral-300">
-                  Serás redirigido a la pasarela segura de <strong className="text-amber-400">NOWPayments</strong> para completar tu pago.
-                </p>
-                <div className="flex justify-between items-center border-t border-neutral-800 pt-2 text-xs">
-                  <span className="text-neutral-400">Total a pagar:</span>
-                  <span className="font-mono font-bold text-emerald-400 text-sm">{totalAmount.toFixed(2)} €</span>
+            {/* PAYMENT CONTENT: CRYPTO */}
+            {paymentMethod === 'crypto' && (
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-4 text-xs">
+                <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                  <span>Pago con Criptomonedas</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleCryptoPayment}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
-                >
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-           {/* PAYMENT CONTENT: KLARNA */}
-            {paymentMethod === 'klarna' && (
-              <div className="rounded-2xl border border-[#FFB3C7]/40 bg-[#FFB3C7]/10 p-5 space-y-4 text-xs">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded bg-[#FFB3C7] text-neutral-950 px-2 py-0.5 font-black text-xs">
-                      Klarna.
-                    </span>
-                    <span className="font-bold text-white text-sm">
-                      Paga en 3 plazos sin intereses
-                    </span>
+                <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-4 text-center space-y-3">
+                  <p className="text-xs text-neutral-300">
+                    Serás redirigido a la pasarela segura de <strong className="text-amber-400">NOWPayments</strong> para completar tu pago.
+                  </p>
+                  <div className="flex justify-between items-center border-t border-neutral-800 pt-2 text-xs">
+                    <span className="text-neutral-400">Total a pagar:</span>
+                    <span className="font-mono font-bold text-emerald-400 text-sm">{totalAmount.toFixed(2)} €</span>
                   </div>
-                  <span className="rounded bg-[#FFB3C7]/20 px-2 py-0.5 text-[10px] font-bold text-[#FFB3C7] border border-[#FFB3C7]/30">
-                    0% TAE • Sin Intereses
-                  </span>
-                </div>
-
-                <div className="rounded-xl bg-neutral-950/90 p-4 border border-neutral-800 space-y-2.5">
-                  <div className="flex items-center justify-between text-xs text-neutral-300">
-                    <span>1º pago (hoy al tramitar):</span>
-                    <strong className="font-mono text-white text-sm">{(totalAmount / 3).toFixed(2)} €</strong>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-neutral-400 border-t border-neutral-800 pt-2">
-                    <span>2º pago (a los 30 días):</span>
-                    <span className="font-mono text-neutral-300">{(totalAmount / 3).toFixed(2)} €</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-neutral-400 border-t border-neutral-800 pt-2">
-                    <span>3º pago (a los 60 días):</span>
-                    <span className="font-mono text-neutral-300">{(totalAmount / 3).toFixed(2)} €</span>
-                  </div>
-                </div>
-
-                <div className="text-[11px] text-neutral-300 space-y-1 pl-1">
-                  <p>• Sin comisiones ni intereses ocultos.</p>
-                  <p>• Aprobación en segundos directamente a través de Klarna.</p>
-                  <p>• Cobertura completa con la Protección al Comprador oficial de Klarna.</p>
-                </div>
-
-                <button
-                  type="button"
-                  disabled={isConnectingGateway}
-                  onClick={() => handleStripeOrKlarnaCheckout('klarna')}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#FFB3C7] py-3.5 text-xs sm:text-sm font-black text-neutral-950 hover:bg-[#ffa0b8] transition active:scale-98 shadow-md"
-                >
-                  {isConnectingGateway ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin"></div>
-                      <span>Conectando con Klarna Seguro...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-4 w-4" />
-                      <span>Continuar con Klarna • {(totalAmount / 3).toFixed(2)} €/mes</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* PAYMENT CONTENT 4: TARJETA BANCARIA */}
-            {paymentMethod === 'card' && (
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-5 space-y-4 text-xs">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-emerald-400" />
-                    <span className="font-bold text-white text-sm">
-                      Pago Seguro con Tarjeta & Pasarela Oficial
-                    </span>
-                  </div>
-                  <span className="rounded bg-emerald-400/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-400/30">
-                    Visa / Mastercard / Apple Pay
-                  </span>
-                </div>
-
-                {/* Primary Button: Stripe Checkout */}
-                <button
-                  type="button"
-                  disabled={isConnectingGateway}
-                  onClick={() => handleStripeOrKlarnaCheckout('card')}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 py-3.5 text-xs sm:text-sm font-black text-neutral-950 hover:bg-emerald-400 transition active:scale-98 shadow-lg shadow-emerald-950/40"
-                >
-                  {isConnectingGateway ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin"></div>
-                      <span>Conectando con Pasarela Segura...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-4 w-4" />
-                      <span>Pagar {totalAmount.toFixed(2)} € con Tarjeta (Stripe Checkout)</span>
-                    </>
-                  )}
-                </button>
-
-                <div className="relative flex py-1 items-center">
-                  <div className="flex-grow border-t border-neutral-800"></div>
-                  <span className="flex-shrink mx-3 text-[10px] text-neutral-500 uppercase tracking-widest font-bold">o pago directo en esta pantalla</span>
-                  <div className="flex-grow border-t border-neutral-800"></div>
-                </div>
-
-                <div className="space-y-3 rounded-xl bg-neutral-950/80 p-4 border border-neutral-800">
-                  <div>
-                    <label className="block text-[11px] text-neutral-300 mb-1">
-                      Número de Tarjeta
-                    </label>
-                    <input
-                      type="text"
-                      maxLength={19}
-                      placeholder="4500 •••• •••• 1234"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full rounded-xl border border-neutral-700 bg-neutral-900 px-3 py-2.5 font-mono text-sm text-white placeholder-neutral-500 focus:border-emerald-400 focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[11px] text-neutral-300 mb-1">
-                        Caducidad (MM/AA)
-                      </label>
-                      <input
-                        type="text"
-                        maxLength={5}
-                        placeholder="12/28"
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(e.target.value)}
-                        className="w-full rounded-xl border border-neutral-700 bg-neutral-900 px-3 py-2 font-mono text-xs text-white placeholder-neutral-500 focus:border-emerald-400 focus:outline-none text-center"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] text-neutral-300 mb-1">
-                        CVV / CVC
-                      </label>
-                      <input
-                        type="password"
-                        maxLength={4}
-                        placeholder="•••"
-                        value={cardCvv}
-                        onChange={(e) => setCardCvv(e.target.value)}
-                        className="w-full rounded-xl border border-neutral-700 bg-neutral-900 px-3 py-2 font-mono text-xs text-white placeholder-neutral-500 focus:border-emerald-400 focus:outline-none text-center"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] text-neutral-300 mb-1">
-                      Nombre del Titular en la Tarjeta
-                    </label>
-                    <input
-                      type="text"
-                      placeholder={customer.name || 'JUAN PÉREZ'}
-                      value={cardHolder}
-                      onChange={(e) => setCardHolder(e.target.value)}
-                      className="w-full rounded-xl border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs uppercase text-white placeholder-neutral-500 focus:border-emerald-400 focus:outline-none"
-                    />
-                  </div>
-
                   <button
                     type="button"
-                    disabled={isProcessingCard}
-                    onClick={() => handleConfirmOrder('card')}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-neutral-800 py-2.5 text-xs font-bold text-neutral-200 hover:bg-neutral-700 hover:text-white transition mt-2"
+                    onClick={handleCryptoPayment}
+                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
                   >
-                    {isProcessingCard ? (
-                      <>
-                        <div className="h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Verificando tarjeta...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Confirmar Pago con Esta Tarjeta</span>
-                      </>
-                    )}
+                    <CheckCircle2 className="h-4 w-4" />
+                    <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
                   </button>
                 </div>
               </div>
@@ -1314,9 +938,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* PASO 3: CONFIRMACIÓN Y RECIBO DE COMPRA                                    */}
-        {/* ========================================================================= */}
+        {/* PASO 3: CONFIRMACIÓN Y RECIBO */}
         {step === 'confirmation' && completedOrder && (
           <div className="p-6 sm:p-8 space-y-6 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -1332,7 +954,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </p>
             </div>
 
-            {/* Order Receipt Box */}
             <div className="rounded-2xl border border-neutral-800 bg-neutral-950/90 p-5 text-left text-xs space-y-3">
               <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
                 <div>
@@ -1347,7 +968,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                 </div>
               </div>
 
-              {/* Items */}
               <div className="space-y-1.5 py-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 block">
                   Artículos:
@@ -1366,7 +986,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                 ))}
               </div>
 
-              {/* Totals & Payment Method */}
               <div className="border-t border-neutral-800 pt-3 space-y-1 text-neutral-300">
                 <div className="flex justify-between">
                   <span>Envío ({completedOrder.customer.country || 'Destino'}):</span>
@@ -1379,12 +998,11 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   <span className="font-mono text-emerald-400">{completedOrder.total.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between text-[11px] text-neutral-400 pt-1">
-                  <span>Método de pago: {completedOrder.paymentMethod.toUpperCase()} {completedOrder.cryptoCurrency && `(${completedOrder.cryptoCurrency})`}</span>
+                  <span>Método de pago: {completedOrder.paymentMethod.toUpperCase()}</span>
                   <span className="text-emerald-400 font-semibold">{completedOrder.estimatedDelivery}</span>
                 </div>
               </div>
 
-              {/* Address */}
               <div className="border-t border-neutral-800 pt-3 text-[11px] text-neutral-400">
                 <span className="font-bold text-neutral-300 block mb-0.5">Dirección de entrega internacional:</span>
                 <p>{completedOrder.customer.address}, {completedOrder.customer.postalCode} {completedOrder.customer.city} ({completedOrder.customer.country || 'Internacional'})</p>
@@ -1397,7 +1015,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <button
                 type="button"
@@ -1410,6 +1027,6 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
           </div>
         )}
       </div>
-</div>
+    </div>
   );
 };
