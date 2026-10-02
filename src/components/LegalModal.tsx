@@ -366,11 +366,11 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                 <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 space-y-2 text-xs">
                   <div className="flex items-center gap-2 text-neutral-300">
                     <Mail className="h-4 w-4 text-emerald-400" />
-                    <span>Email de Soporte: <strong>soporte@kitshub-store.com</strong></span>
+                    <span>Email de Soporte: <strong>soporte@kitshub.es</strong></span>
                   </div>
                   <div className="flex items-center gap-2 text-neutral-300">
                     <HelpCircle className="h-4 w-4 text-emerald-400" />
-                    <span>Horario de Atención: Lunes a Viernes de 09:00 a 19:00 (CET)</span>
+                    <span>Horario de Atención: Lunes a Domingo 24/7 </span>
                   </div>
                 </div>
               </div>
