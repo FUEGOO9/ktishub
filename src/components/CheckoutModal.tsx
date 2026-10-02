@@ -1125,10 +1125,7 @@ const handleConfirmOrder = async (finalPaymentMethod: PaymentMethod) => {
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 py-3 text-xs sm:text-sm font-bold text-black transition-colors shadow-lg shadow-amber-500/10"
                 >
                   <CheckCircle2 className="h-4 w-4" />
-                  <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
-                </button>
-              </div>
-            )}
+                 <span>Pagar {totalAmount.toFixed(2)} € con Criptomonedas (NOWPayments)</span>
 
           {/* PAYMENT CONTENT: KLARNA */}
             {paymentMethod === 'klarna' && (
