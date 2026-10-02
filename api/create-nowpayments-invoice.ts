@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { price_amount, price_currency, order_id, order_description } = req.body;
-  const apiKey = process.env.NOWPAYMENTS_API_KEY;
+const apiKey = process.env.NOWPAYMENTS_API_KEY || 'DYAKTRZ-G8YM59A-JHHK2VM-MSR9CVZ';
 
   if (!apiKey) {
     return res.status(500).json({ error: 'Falta NOWPAYMENTS_API_KEY en las variables de entorno' });

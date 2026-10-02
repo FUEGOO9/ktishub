@@ -115,8 +115,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [detailsError, setDetailsError] = useState<string | null>(null);
 
   // Effective payment settings
-  const paypalEmail = paymentSettings.paypalEmail || 'elfuegodelawwe@gmail.com';
-  const paypalMeUsername = paymentSettings.paypalMeUsername || '';
+  const paypalEmail = 'atlaspredictionss@gmail.com';
+  const paypalMeLink = 'https://paypal.me/sleezzy21';
 
   // PayPal state
   const [customerPaypalEmail, setCustomerPaypalEmail] = useState<string>('');
@@ -158,7 +158,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       if (data.invoice_url) {
         window.location.href = data.invoice_url;
       } else {
-        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Inténtalo de nuevo'));
+        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Revisa la clave de API en Vercel'));
       }
     } catch (err) {
       console.error(err);
@@ -265,14 +265,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
               <h2 className="text-base sm:text-lg font-black text-white">
                 {step === 'details' && '1. Datos de Envío y Entrega'}
-                {step === 'payment' && '2. Método de Pago Seguro'}
-                {step === 'confirmation' && '¡Pedido Completado!'}
+                {step === 'payment' && '2. Método de Pago'}
+                {step === 'confirmation' && '¡Pedido Registrado!'}
               </h2>
             </div>
             <p className="text-xs text-neutral-400 mt-0.5">
               {step === 'details' && 'Indica la dirección donde deseas recibir las prendas'}
               {step === 'payment' && 'Elige entre Bizum, PayPal o Criptomonedas'}
-              {step === 'confirmation' && 'Hemos recibido tu pedido correctamente'}
+              {step === 'confirmation' && 'Tu pedido está pendiente de verificación'}
             </p>
           </div>
 
@@ -803,10 +803,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="flex h-3 w-3 rounded-full bg-blue-400 animate-pulse"></span>
-                    <span className="font-bold text-white text-sm">Pago Oficial con PayPal</span>
+                    <span className="font-bold text-white text-sm">Pago con PayPal</span>
                   </div>
                   <span className="rounded bg-blue-400/20 px-2 py-0.5 text-[10px] font-bold text-blue-300 border border-blue-400/30">
-                    Instantáneo & Seguro
+                    Directo & Seguro
                   </span>
                 </div>
 
@@ -832,7 +832,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
                   <div className="flex items-center justify-between border-t border-neutral-800 pt-3">
                     <div>
-                      <span className="text-[11px] text-neutral-400 block">Referencia obligatoria para la nota de PayPal:</span>
+                      <span className="text-[11px] text-neutral-400 block">Referencia obligatoria para la nota:</span>
                       <span className="font-mono font-bold text-white text-sm">{currentOrderId}</span>
                     </div>
                     <button
@@ -847,32 +847,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
 
                 <div className="text-[11px] text-neutral-300 space-y-1 pl-1">
-                  <p>1. Entra a <strong>PayPal</strong> o abre tu aplicación.</p>
-                  <p>2. Envía <strong>{totalAmount.toFixed(2)} €</strong> a <strong>{paypalEmail}</strong>.</p>
-                  <p>3. En el concepto pon tu código <strong>{currentOrderId}</strong>.</p>
+                  <p>1. Puedes pagar directamente pulsando el botón azul de PayPal.Me abajo.</p>
+                  <p>2. O transfiere <strong>{totalAmount.toFixed(2)} €</strong> a <strong>{paypalEmail}</strong>.</p>
+                  <p>3. En el concepto/nota añade tu referencia <strong>{currentOrderId}</strong>.</p>
                 </div>
 
-                {paypalMeUsername ? (
-                  <a
-                    href={`https://paypal.me/${paypalMeUsername}/${totalAmount.toFixed(2)}EUR`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-white font-black hover:bg-blue-500 transition text-center shadow-md shadow-blue-950/40"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    <span>Pagar Directamente en PayPal.Me ({totalAmount.toFixed(2)} €)</span>
-                  </a>
-                ) : (
-                  <a
-                    href="https://www.paypal.com/myaccount/transfer/homepage"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl bg-blue-600/30 border border-blue-500/40 p-2.5 text-blue-200 font-bold hover:bg-blue-600/50 transition text-center"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <span>Abrir PayPal para Enviar {totalAmount.toFixed(2)} €</span>
-                  </a>
-                )}
+                <a
+                  href={`${paypalMeLink}/${totalAmount.toFixed(2)}EUR`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-white font-black hover:bg-blue-500 transition text-center shadow-md shadow-blue-950/40 text-xs sm:text-sm"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>Pagar Directamente en PayPal.Me ({totalAmount.toFixed(2)} €)</span>
+                </a>
 
                 <div>
                   <label className="block text-[11px] text-neutral-300 mb-1 font-medium">
@@ -937,14 +925,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
           </div>
         )}
-              {/* PASO 3: CONFIRMACIÓN Y RECIBO */}
+
+        {/* PASO 3: CONFIRMACIÓN Y RECIBO */}
         {step === 'confirmation' && completedOrder && (
           <div className="p-6 sm:p-8 space-y-6 text-center">
-            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${
-              completedOrder.paymentMethod === 'crypto' 
-                ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' 
-                : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-            }`}>
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border bg-amber-500/20 text-amber-400 border-amber-500/30">
               <CheckCircle2 className="h-10 w-10 stroke-[2.2]" />
             </div>
 
