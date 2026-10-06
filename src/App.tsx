@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'; import { fetchCouponsFromCloud } from './utils/discounts';
-
+import React, { useState, useEffect, useMemo } from 'react';
 // Dentro del componente App:
 useEffect(() => {
   fetchCouponsFromCloud();
