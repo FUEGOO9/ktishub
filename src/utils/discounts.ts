@@ -209,7 +209,3 @@ export function evaluateDiscount(originalPrice: number, rawCode: string): Discou
     finalPrice: originalPrice,
     message: 'Código de descuento no válido o no existe.',
   };
-}
-if (typeof window !== 'undefined') {
-  fetchCouponsFromCloud();
-}
