@@ -208,9 +208,6 @@ const SECTION_DESCRIPTIONS: Record<string, { title: string; subtitle: string; ic
 };
 
 export default function App() { 
-  useEffect(() => {
-    fetchCouponsFromCloud();
-  }, []);
   // Synchronized global products state (loads INITIAL_PRODUCTS / server API so all items appear immediately)
   const [products, setProducts] = useState<Product[]>(() => {
     try {
