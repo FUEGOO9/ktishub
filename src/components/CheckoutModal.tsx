@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { createNowpaymentsInvoice } from '../utils/cryptoPayment';
-import { 
-  X, 
-  CheckCircle2, 
+import { evaluateDiscount } from '../utils/discounts';
+import {
+  X,
+  CheckCircle2,
   ShoppingBag, 
   Coins, 
   ExternalLink, 
@@ -64,9 +65,8 @@ export const INTERNATIONAL_COUNTRY_CODES: CountryCodeItem[] = [
   { code: 'AU', name: 'Australia', prefix: '+61', flag: '🇦🇺', isEU: false },
   { code: 'JP', name: 'Japón', prefix: '+81', flag: '🇯🇵', isEU: false },
   { code: 'OTHER', name: 'Otro país (Personalizado)', prefix: '+', flag: '🌍', isEU: false },
-];
 
-interface CheckoutModalProps {
+];interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
@@ -77,9 +77,10 @@ interface CheckoutModalProps {
   paymentSettings?: PaymentSettings;
   onOpenSettings?: () => void;
   onOpenLegal?: (tab: 'terms' | 'privacy' | 'shipping' | 'returns' | 'legal') => void;
+  appliedCoupon?: string;
 }
 
-export const CheckoutModal: React.FC<CheckoutModalProps> = ({
+export function CheckoutModal({
   isOpen,
   onClose,
   cartItems,
@@ -89,7 +90,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onOrderCompleted,
   paymentSettings = DEFAULT_PAYMENT_SETTINGS,
   onOpenLegal,
-}) => {
+  appliedCoupon,
+}: CheckoutModalProps) {
   const [step, setStep] = useState<'details' | 'payment' | 'confirmation'>('details');
   const [paymentMethod, setPaymentMethod] = useState<'bizum' | 'paypal' | 'crypto'>('bizum');
 
@@ -137,7 +139,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   
   const shippingInfo = calculateShippingInfo(totalItemsCount, destinationCountry);
   const shippingCost = shippingInfo.shippingCost;
-  const totalAmount = subtotal + shippingCost;
+const discountResult = evaluateDiscount(subtotal, appliedCoupon || '');
+const discountAmount = discountResult.isValid ? discountResult.discountAmount : 0;
+const totalAmount = Math.max(0, subtotal - discountAmount + shippingCost);
 
   const currentOrderId = completedOrder ? completedOrder.id : `PED-${Math.floor(100000 + Math.random() * 900000)}`;
 

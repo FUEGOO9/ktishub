@@ -1579,6 +1579,7 @@ export default function App() {
         onRemoveItem={handleRemoveCartItem}
         onOrderCompleted={handleOrderCompleted}
         paymentSettings={paymentSettings}
+        appliedCoupon={""}
         onOpenSettings={
           isAdminMode
             ? () => {
