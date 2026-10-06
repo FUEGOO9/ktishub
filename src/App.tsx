@@ -1,8 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// Dentro del componente App:
-useEffect(() => {
-  fetchCouponsFromCloud();
-}, []);
 import { 
   Search, 
   Grid, 
