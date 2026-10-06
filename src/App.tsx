@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; import { fetchCouponsFromCloud } from './utils/discounts';
+
+// Dentro del componente App:
+useEffect(() => {
+  fetchCouponsFromCloud();
+}, []);
 import { 
   Search, 
   Grid, 
@@ -202,7 +207,10 @@ const SECTION_DESCRIPTIONS: Record<string, { title: string; subtitle: string; ic
   },
 };
 
-export default function App() {
+export default function App() { 
+  useEffect(() => {
+    fetchCouponsFromCloud();
+  }, []);
   // Synchronized global products state (loads INITIAL_PRODUCTS / server API so all items appear immediately)
   const [products, setProducts] = useState<Product[]>(() => {
     try {
