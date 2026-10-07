@@ -153,6 +153,39 @@ export function CheckoutModal({
 
   const handleCryptoPayment = async () => {
     try {
+      // 1. Estructura el pedido
+      const newOrder = {
+        id: currentOrderId,
+        items: cartItems,
+        subtotal,
+        shippingCost,
+        discountAmount,
+        totalAmount,
+        appliedCoupon: appliedCoupon || null,
+        shippingAddress: {
+          fullName,
+          email,
+          phone,
+          address,
+          city,
+          postalCode,
+          country: destinationCountry,
+        },
+        paymentMethod: 'crypto',
+        status: totalAmount <= 0 ? 'completed' : 'pending',
+        createdAt: new Date().toISOString(),
+      };
+
+      // 2. Guardar en Firestore PRIMERO
+      await addDoc(collection(db, 'orders'), newOrder);
+
+      // Si el cupón deja el total en 0€, se completa sin ir a NOWPayments
+      if (totalAmount <= 0) {
+        alert('¡Pedido completado con éxito!');
+        return;
+      }
+
+      // 3. Crear factura en NOWPayments
       const res = await fetch('/api/create-nowpayments-invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -168,14 +201,13 @@ export function CheckoutModal({
       if (data.invoice_url) {
         window.location.href = data.invoice_url;
       } else {
-        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Revisa la clave de API en Vercel'));
+        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Revisa la clave de API'));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Error de conexión con la pasarela de pago');
+      alert('Error en el pedido: ' + err.message);
     }
   };
-
   const handleCopyPaypal = () => {
     navigator.clipboard.writeText(paypalEmail);
     setCopiedPaypal(true);
