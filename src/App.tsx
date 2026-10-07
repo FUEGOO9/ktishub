@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { db } from './firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Search, 
   Grid, 
@@ -229,7 +229,20 @@ export default function App() {
     }
     return [];
   });
+  // 👇 PEGA ESTO AQUÍ 👇
+  // Conectar el panel a Firebase en tiempo real
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'orders'), (snapshot) => {
+      const ordersFromFirebase = snapshot.docs.map(doc => doc.data() as Order);
+      setOrders(ordersFromFirebase);
+    });
 
+    return () => unsubscribe();
+  }, []);
+  // 👆 HASTA AQUÍ 👆
+
+  // Filter & Search States (Este es tu código de abajo)
+  const [searchQuery, setSearchQuery] = useState('');
   // Local storage orders
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
