@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { db } from './firebase';
+import { collection, addDoc } from 'firebase/firestore';
 import { 
   Search, 
   Grid, 
@@ -654,10 +656,18 @@ export default function App() {
   const handleClearCart = () => {
     setCartItems([]);
   };
-
-  const handleOrderCompleted = (order: Order) => {
+const handleOrderCompleted = async (order: Order) => {
+    // 1. Lo guarda en tu web al instante (como ya hacía)
     setOrders((prev) => [order, ...prev]);
     showToast(`¡Pedido ${order.id} registrado con éxito!`);
+
+    // 2. Lo envía a la nube de Firebase
+    try {
+      await addDoc(collection(db, 'orders'), order);
+      console.log('Pedido enviado a Firebase correctamente');
+    } catch (error) {
+      console.error('Error al guardar en Firebase:', error);
+    }
   };
 
   const handleUpdateOrder = (updatedOrder: Order) => {
