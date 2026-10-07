@@ -232,8 +232,8 @@ export default function App() {
   // 👇 PEGA ESTO AQUÍ 👇
   // Conectar el panel a Firebase en tiempo real
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'orders'), (snapshot) => {
-      const ordersFromFirebase = snapshot.docs.map(doc => doc.data() as Order);
+    const unsubscribe = onSnapshot(collection(db, 'orders'), (snapshot: any) => {
+      const ordersFromFirebase = snapshot.docs.map((doc: any) => doc.data() as Order);
       setOrders(ordersFromFirebase);
     });
 
