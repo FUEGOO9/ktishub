@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { createNowpaymentsInvoice } from '../utils/cryptoPayment';
 import { evaluateDiscount } from '../utils/discounts';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import {
   X,
   CheckCircle2,
@@ -130,18 +132,22 @@ export function CheckoutModal({
 
   if (!isOpen) return null;
 
-  // Totals & Shipping calculation
+ // Totals & Shipping calculation
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + (item.product.price || 24.99) * item.quantity,
-    0
-  );
-  
+  const subtotal = cartItems.reduce((acc, item) => {
+    // Busca el precio real dondequiera que esté guardado en el producto
+    const itemPrice = Number(item.product?.price ?? (item as any).price ?? 0);
+    return acc + itemPrice * item.quantity;
+  }, 0);
+
   const shippingInfo = calculateShippingInfo(totalItemsCount, destinationCountry);
   const shippingCost = shippingInfo.shippingCost;
-const discountResult = evaluateDiscount(subtotal, appliedCoupon || '');
-const discountAmount = discountResult.isValid ? discountResult.discountAmount : 0;
-const totalAmount = Math.max(0, subtotal - discountAmount + shippingCost);
+  const discountResult = evaluateDiscount(subtotal, appliedCoupon || '');
+  const discountAmount = discountResult.isValid ? discountResult.discountAmount : 0;
+  
+  // Si el cupón descuenta el 100% de los productos (descuento >= subtotal),
+  // el cliente solo paga los gastos de envío:
+  const totalAmount = Math.max(0, subtotal - discountAmount) + shippingCost;
 
   const currentOrderId = completedOrder ? completedOrder.id : `PED-${Math.floor(100000 + Math.random() * 900000)}`;
 
