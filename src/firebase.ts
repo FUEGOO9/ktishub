@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA6BV3l9O_zakzn_zpt9Bi4kGllEC2rh5c",
+  apiKey: "AIzaSyA6BV3190_zakzn_zpt9Bi4kGl1EC2rh5c",
   authDomain: "kitshub-92916.firebaseapp.com",
   projectId: "kitshub-92916",
   storageBucket: "kitshub-92916.firebasestorage.app",

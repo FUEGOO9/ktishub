@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { createNowpaymentsInvoice } from '../utils/cryptoPayment';
-import { evaluateDiscount } from '../utils/discounts';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { createNowpaymentsInvoice } from '../utils/cryptoPayment';
+import { evaluateDiscount } from '../utils/discounts';
 import {
   X,
   CheckCircle2,
@@ -152,9 +152,9 @@ export function CheckoutModal({
   const currentOrderId = completedOrder ? completedOrder.id : `PED-${Math.floor(100000 + Math.random() * 900000)}`;
 
   const handleCryptoPayment = async () => {
-    try {
-      // 1. Estructura el pedido
-      const newOrder = {
+   alert("¡Botón pulsado! Guardando pedido...");
+  try {
+    const newOrder = {
         id: currentOrderId,
         items: cartItems,
         subtotal,
