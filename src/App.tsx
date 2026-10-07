@@ -229,21 +229,6 @@ export default function App() {
     }
     return [];
   });
-  // 👇 PEGA ESTO AQUÍ 👇
-  // Conectar el panel a Firebase en tiempo real
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'orders'), (snapshot: any) => {
-      const ordersFromFirebase = snapshot.docs.map((doc: any) => doc.data() as Order);
-      setOrders(ordersFromFirebase);
-    });
-
-    return () => unsubscribe();
-  }, []);
-  // 👆 HASTA AQUÍ 👆
-
-  // Filter & Search States (Este es tu código de abajo)
-  const [searchQuery, setSearchQuery] = useState('');
-  // Local storage orders
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
       const saved = localStorage.getItem('football_jersey_orders_v3');
@@ -253,7 +238,15 @@ export default function App() {
     }
     return [];
   });
+  // Conectar el panel a Firebase en tiempo real
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'orders'), (snapshot: any) => {
+      const ordersFromFirebase = snapshot.docs.map((doc: any) => doc.data() as Order);
+      setOrders(ordersFromFirebase);
+    });
 
+    return () => unsubscribe();
+  }, []);
   // Filter & Search States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSection, setSelectedSection] = useState<CatalogSection>('Populares');
