@@ -663,13 +663,15 @@ export default function App() {
     setCartItems([]);
   };
 const handleOrderCompleted = async (order: Order) => {
-    // 1. Lo guarda en tu web al instante (como ya hacía)
+    // 1. Lo guarda en tu web al instante
     setOrders((prev) => [order, ...prev]);
     showToast(`¡Pedido ${order.id} registrado con éxito!`);
 
     // 2. Lo envía a la nube de Firebase
     try {
-      await addDoc(collection(db, 'orders'), order);
+      // 🚨 TRUCO ANTIMEDIDAS FIREBASE: Limpiamos undefined
+      const cleanOrder = JSON.parse(JSON.stringify(order));
+      await addDoc(collection(db, 'orders'), cleanOrder);
       console.log('Pedido enviado a Firebase correctamente');
     } catch (error) {
       console.error('Error al guardar en Firebase:', error);
