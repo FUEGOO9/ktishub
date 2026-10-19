@@ -208,7 +208,7 @@ export default function App() {
   // Synchronized global products state (loads INITIAL_PRODUCTS / server API so all items appear immediately)
   const [products, setProducts] = useState<Product[]>(() => {
     try {
-      const saved = localStorage.getItem('football_jersey_store_v14');
+      const saved = localStorage.getItem('football_jersey_store_v15');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -392,7 +392,7 @@ export default function App() {
         if (Array.isArray(serverData) && serverData.length > 0) {
           setProducts(serverData);
           try {
-            localStorage.setItem('football_jersey_store_v14', JSON.stringify(serverData));
+            localStorage.setItem('football_jersey_store_v15', JSON.stringify(serverData));
           } catch (e) {
             console.error('Error saving products to local storage:', e);
           }
@@ -407,7 +407,7 @@ export default function App() {
   const persistProducts = (nextProducts: Product[]) => {
     setProducts(nextProducts);
     try {
-      localStorage.setItem('football_jersey_store_v14', JSON.stringify(nextProducts));
+      localStorage.setItem('football_jersey_store_v15', JSON.stringify(nextProducts));
     } catch (e) {
       console.error('Failed to save to localStorage:', e);
     }
