@@ -663,16 +663,26 @@ export default function App() {
     setCartItems([]);
   };
 const handleOrderCompleted = async (order: Order) => {
-    // 1. Lo guarda en tu web al instante
+    // 1. Guardar en el estado local de la web
     setOrders((prev) => [order, ...prev]);
     showToast(`¡Pedido ${order.id} registrado con éxito!`);
 
-    // 2. Lo envía a la nube de Firebase
+    // 2. Guardar en la base de datos de Firebase
     try {
-      // 🚨 TRUCO ANTIMEDIDAS FIREBASE: Limpiamos undefined
       const cleanOrder = JSON.parse(JSON.stringify(order));
       await addDoc(collection(db, 'orders'), cleanOrder);
       console.log('Pedido enviado a Firebase correctamente');
+
+      // 3. ¡NUEVO! Enviar la factura por correo electrónico al cliente
+      fetch('/api/send-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: cleanOrder }),
+      })
+      .then(res => res.json())
+      .then(data => console.log('Respuesta del correo:', data))
+      .catch((err) => console.error('Error enviando factura por email:', err));
+
     } catch (error) {
       console.error('Error al guardar en Firebase:', error);
     }
