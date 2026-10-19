@@ -135,57 +135,64 @@ export function CheckoutModal({
  // Totals & Shipping calculation
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cartItems.reduce((acc, item) => {
-    // Busca el precio real dondequiera que esté guardado en el producto
     const itemPrice = Number(item.product?.price ?? (item as any).price ?? 0);
     return acc + itemPrice * item.quantity;
   }, 0);
 
   const shippingInfo = calculateShippingInfo(totalItemsCount, destinationCountry);
   const shippingCost = shippingInfo.shippingCost;
-  const discountResult = evaluateDiscount(subtotal, appliedCoupon || '');
+
+  // 🚨 ARREGLO DE CUPONES: Arrastramos el cupón que el cliente aplicó en la camiseta
+  const itemWithCoupon = cartItems.find(i => i.discountCode);
+  const activeCouponCode = appliedCoupon || (itemWithCoupon ? itemWithCoupon.discountCode : '');
+
+  const discountResult = evaluateDiscount(subtotal, activeCouponCode || '');
   const discountAmount = discountResult.isValid ? discountResult.discountAmount : 0;
   
-  // Si el cupón descuenta el 100% de los productos (descuento >= subtotal),
-  // el cliente solo paga los gastos de envío:
+  // Si el cupón descuenta el 100%, el cliente solo paga gastos de envío:
   const totalAmount = Math.max(0, subtotal - discountAmount) + shippingCost;
 
   const currentOrderId = completedOrder ? completedOrder.id : `PED-${Math.floor(100000 + Math.random() * 900000)}`;
 
   const handleCryptoPayment = async () => {
-   alert("¡Botón pulsado! Guardando pedido...");
-  try {
-    const newOrder = {
+    try {
+      const newOrder = {
         id: currentOrderId,
         items: cartItems,
         subtotal,
         shippingCost,
         discountAmount,
         totalAmount,
-        appliedCoupon: appliedCoupon || null,
+        appliedCoupon: activeCouponCode || null,
         shippingAddress: {
-  fullName: customer.name,
-  email: customer.email,
-  phone: customer.phone,
-  address: customer.address,
-  city: customer.city,
-  postalCode: customer.postalCode,
-  country: destinationCountry,
-},
+          fullName: customer.name,
+          email: customer.email,
+          phone: customer.phone,
+          address: customer.address,
+          city: customer.city,
+          postalCode: customer.postalCode,
+          country: destinationCountry,
+        },
         paymentMethod: 'crypto',
         status: totalAmount <= 0 ? 'completed' : 'pending',
         createdAt: new Date().toISOString(),
       };
 
-      // 2. Guardar en Firestore PRIMERO
-      await addDoc(collection(db, 'orders'), newOrder);
+      // 🚨 ARREGLO DE FIREBASE: Esto limpia los datos "vacíos" (undefined) para que Firebase no bloquee el pedido.
+      const cleanOrder = JSON.parse(JSON.stringify(newOrder));
+
+      // 1. Guardar en Firestore PRIMERO
+      await addDoc(collection(db, 'orders'), cleanOrder);
 
       // Si el cupón deja el total en 0€, se completa sin ir a NOWPayments
       if (totalAmount <= 0) {
         alert('¡Pedido completado con éxito!');
+        onClearCart();
+        setStep('confirmation');
         return;
       }
 
-      // 3. Crear factura en NOWPayments
+      // 2. Crear factura en NOWPayments
       const res = await fetch('/api/create-nowpayments-invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -201,13 +208,14 @@ export function CheckoutModal({
       if (data.invoice_url) {
         window.location.href = data.invoice_url;
       } else {
-        alert('Error al generar la factura en NOWPayments: ' + (data.error || 'Revisa la clave de API'));
+        alert('Error al generar la factura: ' + (data.error || 'Revisa la clave de API'));
       }
     } catch (err: any) {
       console.error(err);
       alert('Error en el pedido: ' + err.message);
     }
   };
+
   const handleCopyPaypal = () => {
     navigator.clipboard.writeText(paypalEmail);
     setCopiedPaypal(true);
@@ -227,9 +235,7 @@ export function CheckoutModal({
   const getFullInternationalPhone = (): string => {
     const trimmed = phoneNumber.trim();
     if (!trimmed) return '';
-    if (trimmed.startsWith('+')) {
-      return trimmed;
-    }
+    if (trimmed.startsWith('+')) return trimmed;
     return `${effectivePrefix} ${trimmed}`.trim();
   };
 
@@ -237,24 +243,8 @@ export function CheckoutModal({
     e.preventDefault();
     const fullPhone = getFullInternationalPhone();
 
-    if (!customer.name.trim()) {
-      setDetailsError('Por favor, indica el nombre completo del destinatario.');
-      return;
-    }
-    if (!phoneNumber.trim() || phoneNumber.trim().replace(/\D/g, '').length < 6) {
-      setDetailsError('Por favor, introduce tu número de teléfono móvil con el prefijo internacional para asegurar la entrega.');
-      return;
-    }
-    if (!customer.email.trim() || !customer.email.includes('@')) {
-      setDetailsError('Por favor, introduce un correo electrónico válido para enviarte la confirmación.');
-      return;
-    }
-    if (!customer.address.trim()) {
-      setDetailsError('Por favor, especifica la dirección de entrega (calle, número, etc.).');
-      return;
-    }
-    if (!customer.city.trim() || !customer.postalCode.trim()) {
-      setDetailsError('Por favor, completa la ciudad y el código postal.');
+    if (!customer.name.trim() || !phoneNumber.trim() || !customer.email.trim() || !customer.address.trim() || !customer.city.trim() || !customer.postalCode.trim()) {
+      setDetailsError('Por favor, rellena todos los campos obligatorios.');
       return;
     }
 
@@ -290,11 +280,14 @@ export function CheckoutModal({
       estimatedDelivery: 'Envío asegurado con CTT Express y número de seguimiento',
     };
 
-    setCompletedOrder(order);
-    if (onOrderCompleted) onOrderCompleted(order);
+    // 🚨 ARREGLO DE FIREBASE: Limpiamos también el pedido de Bizum/PayPal
+    const cleanOrder = JSON.parse(JSON.stringify(order));
+
+    setCompletedOrder(cleanOrder);
+    if (onOrderCompleted) onOrderCompleted(cleanOrder);
     onClearCart();
     setStep('confirmation');
-  };
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md overflow-y-auto">
