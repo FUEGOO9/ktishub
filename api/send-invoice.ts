@@ -59,7 +59,7 @@ export default async function handler(req: any, res: any) {
     `;
 
     const data = await resend.emails.send({
-      from: 'Kitshub <onboarding@resend.dev>',
+      from: 'Kitshub <soporte@kitshub.es>',
       to: [order.customer.email],
       subject: `¡Pago recibido! Confirmación de tu pedido #${order.id}`,
       html: emailHtml,
