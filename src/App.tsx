@@ -1595,7 +1595,7 @@ const handleOrderCompleted = async (order: Order) => {
         onRemoveItem={handleRemoveCartItem}
         onOrderCompleted={handleOrderCompleted}
         paymentSettings={paymentSettings}
-        appliedCoupon={""}
+        appliedCoupon={cartItems.length > 0 ? cartItems[0].discountCode : ""}
         onOpenSettings={
           isAdminMode
             ? () => {
