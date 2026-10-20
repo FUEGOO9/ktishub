@@ -282,6 +282,15 @@ export function CheckoutModal({
 
     // 🚨 ARREGLO DE FIREBASE: Limpiamos también el pedido de Bizum/PayPal
     const cleanOrder = JSON.parse(JSON.stringify(order));
+    // -------- NUEVO: DISPARAR EL CORREO AQUÍ --------
+    fetch('/api/send-invoice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order: cleanOrder }),
+    })
+    .then((res) => console.log("Correo solicitado:", res.status))
+    .catch((err) => console.error("Fallo al pedir correo:", err));
+    // ------------------------------------------------
 
     setCompletedOrder(cleanOrder);
     if (onOrderCompleted) onOrderCompleted(cleanOrder);
