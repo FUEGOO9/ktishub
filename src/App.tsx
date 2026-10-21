@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { db } from './firebase';
-import { doc, deleteDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { doc, deleteDoc, collection, addDoc, onSnapshot, query, where, getDocs } from 'firebase/firestore';
 import {
   Search, 
   Grid, 
@@ -694,9 +694,16 @@ const handleUpdateOrder = (updatedOrder: Order) => {
 
   const handleDeleteOrder = async (orderId: string) => {
     try {
-      // OJO: Si tu colección en Firebase se llama de otra forma (ej. 'pedidos'), cámbialo aquí abajo
-      await deleteDoc(doc(db, 'orders', orderId));
+      // 1. Buscar en la colección 'orders' el documento que coincida con tu ID visual (ej: ORD-123456)
+      const q = query(collection(db, 'orders'), where('id', '==', orderId));
+      const querySnapshot = await getDocs(q);
+
+      // 2. Borrar ese documento usando su ID interno real de Firebase
+      querySnapshot.forEach(async (documento) => {
+        await deleteDoc(doc(db, 'orders', documento.id));
+      });
       
+      // 3. Quitarlo de la pantalla
       setOrders((prev) => prev.filter((o) => o.id !== orderId));
       showToast(`Pedido #${orderId} eliminado del registro`);
     } catch (error) {
