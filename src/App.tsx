@@ -383,9 +383,15 @@ export default function App() {
     }
   }, []);
 
-
-  // Load products from server API on mount
+// Load products from server API on mount ONLY if localStorage is empty
   useEffect(() => {
+    const saved = localStorage.getItem('football_jersey_store_v15');
+    
+    // Si ya tenemos camisetas con sus categorías editadas en local, cortamos la función
+    if (saved && JSON.parse(saved).length > 0) {
+      return; 
+    }
+
     fetch('/products.json')
       .then((res) => res.json())
       .then((serverData) => {
@@ -402,7 +408,7 @@ export default function App() {
         console.error('Failed to load products from server:', err);
       });
   }, []);
-
+  
   // Helper function to persist products both locally and on server
   const persistProducts = (nextProducts: Product[]) => {
     setProducts(nextProducts);
