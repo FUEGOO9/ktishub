@@ -382,7 +382,6 @@ export default function App() {
       // ignore
     }
   }, []);
-
 // Load products from server API on mount ONLY if localStorage is empty
   useEffect(() => {
     const saved = localStorage.getItem('football_jersey_store_v15');
@@ -408,7 +407,6 @@ export default function App() {
         console.error('Failed to load products from server:', err);
       });
   }, []);
-  
   // Helper function to persist products both locally and on server
   const persistProducts = (nextProducts: Product[]) => {
     setProducts(nextProducts);
