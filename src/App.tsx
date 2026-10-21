@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { db } from './firebase';
-import { collection, addDoc, onSnapshot } from 'firebase/firestore';
-import { 
+import { doc, deleteDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import {
   Search, 
   Grid, 
   List, 
@@ -687,22 +687,28 @@ const handleOrderCompleted = async (order: Order) => {
       console.error('Error al guardar en Firebase:', error);
     }
   };
-
-  const handleUpdateOrder = (updatedOrder: Order) => {
+const handleUpdateOrder = (updatedOrder: Order) => {
     setOrders((prev) => prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o)));
     showToast(`Pedido #${updatedOrder.id} actualizado`);
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    setOrders((prev) => prev.filter((o) => o.id !== orderId));
-    showToast(`Pedido #${orderId} eliminado del registro`);
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      // OJO: Si tu colección en Firebase se llama de otra forma (ej. 'pedidos'), cámbialo aquí abajo
+      await deleteDoc(doc(db, 'orders', orderId));
+      
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      showToast(`Pedido #${orderId} eliminado del registro`);
+    } catch (error) {
+      console.error("Error al eliminar de Firebase:", error);
+      showToast("Error al eliminar el pedido de la base de datos");
+    }
   };
 
   const handleClearAllOrders = () => {
     setOrders([]);
     showToast('Historial de pedidos vaciado');
   };
-
   const handleGenerateSampleOrder = () => {
     const sampleProduct = products[0] || INITIAL_PRODUCTS[0];
     const sampleOrder: Order = {
