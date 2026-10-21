@@ -694,29 +694,41 @@ const handleUpdateOrder = (updatedOrder: Order) => {
 
   const handleDeleteOrder = async (orderId: string) => {
     try {
-      // 1. Buscar en la colección 'orders' el documento que coincida con tu ID visual (ej: ORD-123456)
       const q = query(collection(db, 'orders'), where('id', '==', orderId));
       const querySnapshot = await getDocs(q);
 
-      // 2. Borrar ese documento usando su ID interno real de Firebase
-      querySnapshot.forEach(async (documento) => {
-        await deleteDoc(doc(db, 'orders', documento.id));
-      });
+      // Usamos Promise.all para obligar a Firebase a terminar de borrar antes de seguir
+      const deletePromises = querySnapshot.docs.map((documento) =>
+        deleteDoc(doc(db, 'orders', documento.id))
+      );
+      await Promise.all(deletePromises);
       
-      // 3. Quitarlo de la pantalla
       setOrders((prev) => prev.filter((o) => o.id !== orderId));
-      showToast(`Pedido #${orderId} eliminado del registro`);
+      showToast(`Pedido #${orderId} eliminado definitivamente`);
     } catch (error) {
       console.error("Error al eliminar de Firebase:", error);
       showToast("Error al eliminar el pedido de la base de datos");
     }
   };
 
-  const handleClearAllOrders = () => {
-    setOrders([]);
-    showToast('Historial de pedidos vaciado');
+  const handleClearAllOrders = async () => {
+    try {
+      // Pedimos a Firebase TODOS los pedidos y los fulminamos de la base de datos
+      const querySnapshot = await getDocs(collection(db, 'orders'));
+      const deletePromises = querySnapshot.docs.map((documento) =>
+        deleteDoc(doc(db, 'orders', documento.id))
+      );
+      await Promise.all(deletePromises);
+
+      setOrders([]);
+      showToast('Historial de pedidos vaciado permanentemente');
+    } catch (error) {
+      console.error("Error al vaciar Firebase:", error);
+      showToast("Error al vaciar la base de datos");
+    }
   };
-  const handleGenerateSampleOrder = () => {
+
+  const handleGenerateSampleOrder = async () => {
     const sampleProduct = products[0] || INITIAL_PRODUCTS[0];
     const sampleOrder: Order = {
       id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
@@ -754,10 +766,19 @@ const handleUpdateOrder = (updatedOrder: Order) => {
       carrier: 'CTT Express',
       date: new Date().toISOString(),
     };
-    setOrders((prev) => [sampleOrder, ...prev]);
-    showToast('🎉 Pedido de demostración generado con éxito');
-  };
 
+    try {
+      // Ahora el pedido de demostración SÍ se guarda en Firebase para poder probar el borrado correctamente
+      const cleanOrder = JSON.parse(JSON.stringify(sampleOrder));
+      await addDoc(collection(db, 'orders'), cleanOrder);
+
+      setOrders((prev) => [sampleOrder, ...prev]);
+      showToast('🎉 Pedido de demostración generado con éxito');
+    } catch (error) {
+      console.error("Error guardando el pedido de prueba:", error);
+    }
+  };
+  
   // Quick switch to Populares tab
   const handleSelectPopularTab = () => {
     setSelectedSection('Populares');
