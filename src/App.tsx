@@ -948,16 +948,13 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                   <Flame className="h-3.5
                   {popularJerseysCount > 0 ? `${popularJerseysCount} Modelos Populares` : 'Colección Popular'}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30">
-                  <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-          
-                </span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
                 Camisetas Fan & Player con Dorsal Oficial
               </h2>
-
+              
+                  
               <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
                 Elige tu camiseta favorita, selecciona la versión (Fan o Player), personaliza el nombre y dorsal gratis y haz tu pedido de forma rápida y sencilla.
               </p>
