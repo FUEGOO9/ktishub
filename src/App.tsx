@@ -930,7 +930,7 @@ const handleUpdateOrder = (updatedOrder: Order) => {
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
         
-        {/* ========================================================================= */}
+       {/* ========================================================================= */}
         {/* HERO / APARTADO DESTACADO DE CAMISETAS & PAGO SEGURO                      */}
         {/* ========================================================================= */}
         <div className="relative mb-6 overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 via-neutral-900 to-emerald-950/30 p-5 sm:p-7 shadow-2xl">
@@ -945,7 +945,7 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                   CAMISETAS & EQUIPACIONES DE FÚTBOL
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/20 px-3 py-1 text-xs font-bold text-orange-300 border border-orange-500/30">
-                  <Flame className="h-3.5 w-3.5 fill-current" />
+                  <Flame className="h-3.5
                   {popularJerseysCount > 0 ? `${popularJerseysCount} Modelos Populares` : 'Colección Popular'}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30">
