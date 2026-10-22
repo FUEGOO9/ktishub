@@ -939,7 +939,7 @@ const handleUpdateOrder = (updatedOrder: Order) => {
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-3 max-w-2xl">
-              <div className=" flex flex-wrap gap-2" items-center>
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-xs font-black text-neutral-950 shadow-md">
                   <span>⚽</span>
                   CAMISETAS & EQUIPACIONES DE FÚTBOL
@@ -950,11 +950,9 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                 </span>
               </div>
               
-
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
                 Camisetas Fan & Player con Dorsal Oficial
               </h2>
-
                   
               <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
                 Elige tu camiseta favorita, selecciona la versión (Fan o Player), personaliza el nombre y dorsal gratis y haz tu pedido de forma rápida y sencilla.
@@ -996,6 +994,7 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                   </>
                 )}
               </div>
+            </div>
 
             {/* Actions Card */}
             <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
@@ -1036,7 +1035,6 @@ const handleUpdateOrder = (updatedOrder: Order) => {
             </div>
           </div>
         </div>
-
         {/* ========================================================================= */}
         {/* CATEGORY FOCUS BANNER                                                     */}
         {/* ========================================================================= */}
