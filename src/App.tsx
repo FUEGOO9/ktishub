@@ -959,14 +959,12 @@ const handleUpdateOrder = (updatedOrder: Order) => {
               </h2>
 
               <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
-                Elige tu camiseta favorita, selecciona la versión (Fan o Player), personaliza el nombre y dorsal gratis y paga en PayPal, Crypto y Bizum
+                Elige tu camiseta favorita, selecciona la versión (Fan o Player), personaliza el nombre y dorsal gratis y haz tu pedido de forma rápida y sencilla.
               </p>
 
               {/* Customer Trust Badges */}
               <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs text-neutral-300">
-                
-                </div>
-              <div className="flex items-center gap-1.5 rounded-xl bg-neutral-950/80 px-3 py-1.5 border border-neutral-800">
+                <div className="flex items-center gap-1.5 rounded-xl bg-neutral-950/80 px-3 py-1.5 border border-neutral-800">
                   <Truck className="h-4 w-4 text-emerald-400" />
                   <span>Envío Exprés con Seguimiento</span>
                 </div>
@@ -986,7 +984,7 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                       onClick={() => setIsPaymentSettingsOpen(true)}
                       className="flex items-center gap-1.5 rounded-xl bg-amber-500/20 px-3 py-1.5 border border-amber-500/40 text-amber-300 hover:bg-amber-500 hover:text-neutral-950 transition font-bold"
                     >
-                      <span>⚙️ Configurar Cobros (Stripe/Klarna)</span>
+                      <span>⚙️ Configurar Cobros</span>
                     </button>
                     <a
                       href="/api/download-project-zip"
@@ -1000,7 +998,6 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                   </>
                 )}
               </div>
-            </div>
 
             {/* Actions Card */}
             <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
