@@ -161,9 +161,8 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                   El cliente selecciona los artículos en el catálogo, especifica tallas, versiones (Fan Version o Player Version) y personalización de dorsales (nombre y número). Al pulsar en "Tramitar Pedido", se accede a la pasarela de pago segura. Aceptamos:
                 </p>
                 <ul className="list-disc pl-5 text-xs text-neutral-400 space-y-1">
-                  <li><strong>Tarjetas de Crédito y Débito:</strong> Visa, Mastercard, Maestro, American Express (cifrado SSL de 256 bits).</li>
-                  <li><strong>Billeteras Digitales:</strong> Apple Pay y Google Pay con autenticación biométrica en 1 clic.</li>
-                  <li><strong>Pago a Plazos con Klarna:</strong> Paga en 3 plazos mensuales sin intereses ni comisiones ocultas.</li>
+                
+            
                   <li><strong>PayPal & Criptomonedas:</strong> Métodos alternativos seguros (USDT, BTC, ETH) y pagos directos con confirmación instantánea.</li>
                 </ul>
               </div>

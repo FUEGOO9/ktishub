@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="bg-gradient-to-r from-emerald-950 via-neutral-900 to-emerald-950 px-4 py-1 text-center text-[11px] text-neutral-300 border-b border-neutral-800/60 flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
         <span className="inline-flex items-center gap-1 font-bold text-emerald-400">
           <CreditCard className="h-3 w-3" />
-          Pago seguro Tarjeta, Apple Pay, Google Pay y Klarna (3 plazos sin intereses)
+      
         </span>
         <span className="hidden sm:inline text-neutral-500">•</span>
         <span className="text-neutral-300 font-medium">

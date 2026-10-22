@@ -950,7 +950,7 @@ const handleUpdateOrder = (updatedOrder: Order) => {
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30">
                   <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-                  Tarjeta, Apple Pay & Klarna
+          
                 </span>
               </div>
 
@@ -959,20 +959,14 @@ const handleUpdateOrder = (updatedOrder: Order) => {
               </h2>
 
               <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
-                Elige tu camiseta favorita, selecciona la versión (Fan o Player), personaliza el nombre y dorsal gratis y paga de forma 100% segura con tarjeta o en 3 plazos con Klarna.
+                Elige tu camiseta favorita, selecciona la versión (Fan o Player), personaliza el nombre y dorsal gratis y paga en PayPal, Crypto y Bizum
               </p>
 
               {/* Customer Trust Badges */}
               <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs text-neutral-300">
-                <div className="flex items-center gap-1.5 rounded-xl bg-neutral-950/80 px-3 py-1.5 border border-neutral-800">
-                  <CreditCard className="h-4 w-4 text-emerald-400" />
-                  <span>Visa • Mastercard • Apple Pay</span>
+                
                 </div>
-                <div className="flex items-center gap-1.5 rounded-xl bg-neutral-950/80 px-3 py-1.5 border border-[#FFB3C7]/40 text-[#FFB3C7]">
-                  <span className="font-black text-[11px] px-1 bg-[#FFB3C7] text-black rounded">Klarna.</span>
-                  <span>3 plazos sin intereses</span>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-xl bg-neutral-950/80 px-3 py-1.5 border border-neutral-800">
+              <div className="flex items-center gap-1.5 rounded-xl bg-neutral-950/80 px-3 py-1.5 border border-neutral-800">
                   <Truck className="h-4 w-4 text-emerald-400" />
                   <span>Envío Exprés con Seguimiento</span>
                 </div>
